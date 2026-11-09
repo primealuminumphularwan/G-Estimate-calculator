@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ur">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>G Estimate Calculator</title>
+<style>
+:root{--navy:#16324f;--gold:#c49a45;--bg:#f3f6f8;--line:#d9e1e8}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,"Noto Nastaliq Urdu",sans-serif;background:var(--bg);color:#17212b}
+header{background:var(--navy);color:white;padding:18px 16px;text-align:center}
+header h1{margin:0;font-size:22px}header p{margin:6px 0 0;color:#f1dcae;font-size:14px}
+main{max-width:760px;margin:16px auto;padding:0 12px}.card{background:white;border:1px solid var(--line);border-radius:14px;padding:15px;margin-bottom:13px;box-shadow:0 2px 8px #16324f0b}
+h2{font-size:17px;margin:0 0 12px;color:var(--navy)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+label{display:block;font-size:13px;margin-bottom:5px;color:#475569}input,select{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:9px;font-size:16px;background:white;color:#17212b}
+button{border:0;border-radius:9px;padding:12px 14px;font-size:15px;font-weight:700;cursor:pointer}.primary{background:var(--navy);color:white}.secondary{background:#e7edf3;color:var(--navy)}.gold{background:var(--gold);color:#171717}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.metric{padding:12px;border-radius:10px;background:#f4f7fa}.metric span{display:block;font-size:12px;color:#64748b}.metric strong{display:block;font-size:19px;margin-top:5px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:9px 5px;border-bottom:1px solid var(--line)}th{color:#475569}
+.note{font-size:12px;color:#64748b;line-height:1.5}.rtl{direction:rtl;text-align:right}.window{border:1px solid var(--line);border-radius:10px;padding:12px;margin:10px 0}.window h3{font-size:15px;margin:0 0 10px}
+@media(max-width:430px){.grid{grid-template-columns:1fr 1fr}header h1{font-size:19px}.metric strong{font-size:17px}}
+</style>
+</head>
+<body>
+<header><h1>G Estimate Calculator</h1><p>Prime Aluminum &amp; Glass · Phularwan</p></header>
+<main>
+<section class="card">
+<h2>Customer Details / کسٹمر کی تفصیل</h2>
+<div style="margin:0 0 12px;padding:10px;background:#f8fafc;border-radius:8px"><label style="display:flex;align-items:center;gap:8px;margin:0"><input id="bismillah" type="checkbox" style="width:auto" checked> بسم اللہ الرحمن الرحیم — Include on estimate / اندازے پر شامل کریں</label></div>
+<div class="grid">
+<div><label>Customer Name / نام</label><input id="customer" placeholder="Customer name"></div>
+<div><label>Mobile Number / موبائل</label><input id="mobile" inputmode="tel" placeholder="03xx-xxxxxxx"></div>
+<div><label>Date / تاریخ</label><input id="date" type="date"></div>
+<div><label>Estimate No. / نمبر</label><input id="estimateNo" placeholder="Auto / optional"></div>
+</div></section>
+<section class="card">
+<h2>Rates / ریٹ</h2>
+<div class="grid">
+<div><label>Aluminium rate (Rs / running ft)</label><input id="alRate" type="number" value="0" min="0"></div>
+<div><label>Glass rate (Rs / sq ft)</label><input id="glassRate" type="number" value="400" min="0"></div>
+<div><label>Hardware (Rs / window)</label><input id="hardwareRate" type="number" value="2000" min="0"></div>
+<div><label>Labour (Rs / running ft)</label><input id="labourRate" type="number" value="150" min="0"></div>
+<div><label>Aluminium discount (%)</label><input id="discount" type="number" value="4" min="0" max="100"></div>
+<div><label>Glass discount (%)</label><input id="glassDiscount" type="number" value="6" min="0" max="100"></div>
+</div>
+<p class="note">Rates editable ہیں۔ Aluminium discount default 4% اور glass discount 6% ہے؛ ضرورت کے مطابق بدل سکتے ہیں۔ Wastage شامل نہیں کی جاتی۔</p>
+</section>
+<section class="card">
+<h2>Measurement Helper / پیمائش کا حساب</h2>
+<p class="note">آپ کے بتائے ہوئے اصول کے مطابق 8 سوتَر = 1 انچ۔ یہاں فٹ، انچ اور سوتَر ڈالیں؛ نتیجہ انچ میں آئے گا۔ پھر اسے ونڈو کے Width یا Height میں درج کریں۔</p>
+<div class="grid">
+<div><label>Feet / فٹ</label><input id="measureFeet" type="number" min="0" value="0"></div>
+<div><label>Inches / انچ</label><input id="measureInches" type="number" min="0" value="0"></div>
+<div><label>Suter / سوتَر (0–7)</label><input id="measureSuter" type="number" min="0" max="7" value="0"></div>
+<div class="metric"><span>Total in inches / کل انچ</span><strong id="measureResult">0</strong></div>
+</div>
+<div class="actions"><button class="secondary" onclick="applyMeasurement('width')">Set first Window Width / پہلی ونڈو کی چوڑائی</button><button class="secondary" onclick="applyMeasurement('height')">Set first Window Height / پہلی ونڈو کی اونچائی</button></div>
+<p class="note" id="measureStatus"></p>
+</section>
+<section class="card">
+<h2>Windows / کھڑکیاں</h2>
+<div id="windows"></div>
+<div class="actions"><button class="secondary" onclick="addWindow()">＋ نئی Window شامل کریں</button><button class="primary" onclick="calculate()">Calculate / حساب کریں</button></div>
+<p class="note">المونیم running feet فی ونڈو والا خانہ فی الحال دستی ہے۔ آپ کا اصل section-wise فارمولا ملنے پر اسے خودکار کیا جائے گا؛ فی الحال کوئی اندازہ لگا کر غلط مقدار شامل نہیں کی گئی۔ شیشے کا رقبہ چوڑائی × اونچائی (انچ) ÷ 144 سے نکلتا ہے۔</p>
+</section>
+<section class="card">
+<h2>Estimate Summary / حساب</h2>
+<div class="summary">
+<div class="metric"><span>Aluminium</span><strong id="alTotal">Rs 0</strong></div>
+<div class="metric"><span>Glass</span><strong id="glassTotal">Rs 0</strong></div>
+<div class="metric"><span>Hardware</span><strong id="hardwareTotal">Rs 0</strong></div>
+<div class="metric"><span>Labour</span><strong id="labourTotal">Rs 0</strong></div>
+<div class="metric"><span>Grand Total</span><strong id="grandTotal">Rs 0</strong></div>
+<div class="metric"><span>Advance / ایڈوانس</span><input id="advance" type="number" value="0" min="0" oninput="calculate()" style="margin-top:6px"></div>
+<div class="metric"><span>Final Deal / طے شدہ قیمت</span><input id="finalDeal" type="number" min="0" placeholder="Optional" oninput="calculate()" style="margin-top:6px"></div>
+<div class="metric"><span>Balance / بقایا</span><strong id="balance">Rs 0</strong></div>
+</div>
+<div class="actions"><button class="gold" onclick="saveEstimate()">Save Estimate / محفوظ کریں</button><button class="secondary" onclick="shareEstimate()">Share / شیئر کریں</button><button class="secondary" onclick="printEstimate()">PDF / Print</button><button class="secondary" onclick="newEstimate()">New / نیا اندازہ</button></div>
+<p id="status" class="note"></p>
+</section>
+<section class="card">
+<h2>Saved Estimates / محفوظ اندازے</h2>
+<div class="grid"><div><label>Search customer / کسٹمر تلاش کریں</label><input id="search" placeholder="نام یا موبائل" oninput="renderSaved()"></div><div style="display:flex;align-items:end"><button class="secondary" onclick="renderSaved()">Search / تلاش</button></div></div>
+<div id="savedList" style="margin-top:12px"></div>
+<div class="actions"><button class="secondary" onclick="exportBackup()">Download Backup / بیک اپ ڈاؤن لوڈ</button><button class="secondary" onclick="document.getElementById('backupFile').click()">Restore Backup / بیک اپ واپس لائیں</button><input id="backupFile" type="file" accept="application/json,.json" style="display:none" onchange="importBackup(event)"></div><p class="note">اہم: اندازے اسی browser/device میں محفوظ ہوتے ہیں۔ بیک اپ ڈاؤن لوڈ کر کے محفوظ رکھیں؛ دوسرے فون میں واپس لانے کے لیے Restore Backup استعمال کریں۔ یہ browser prototype ہے، مکمل Android APK ابھی تیار نہیں۔</p>
+</section>
+</main>
+<script>
+let count=0;
+let loadedEstimateIndex=null;
+const sections=['DC26F','DC30F','M23','M28','M24','D29','D54F','D50A'];
+function addWindow(data={}) {
+ count++;
+ const div=document.createElement('div'); div.className='window'; div.dataset.id=count;
+ div.innerHTML=`<h3>Window ${count}</h3><div class="grid">
+ <div><label>Section / سیکشن</label><select class="section">${sections.map(s=>`<option ${data.section===s?'selected':''}>${s}</option>`).join('')}</select></div>
+ <div><label>Quantity / تعداد</label><input class="qty" type="number" min="1" value="${data.qty||1}"></div>
+ <div><label>Width (inches) / چوڑائی</label><input class="width" type="number" min="0" value="${data.width||48}"></div>
+ <div><label>Height (inches) / اونچائی</label><input class="height" type="number" min="0" value="${data.height||24}"></div>
+ <div><label>Aluminium running ft per window</label><input class="running" type="number" min="0" step="0.1" value="${data.running||0}"></div>
+ <div><label>Hardware override (Rs/window, 0 = default)</label><input class="hardware" type="number" min="0" value="${data.hardware||0}"></div>
+ </div><div class="actions"><button class="secondary" onclick="this.closest('.window').remove();calculate()">Remove / حذف کریں</button></div>`;
+ document.getElementById('windows').appendChild(div); calculate();
+}
+function measurementInches(){
+ const feet=Math.max(0,Number(document.getElementById('measureFeet').value)||0);
+ const inches=Math.max(0,Number(document.getElementById('measureInches').value)||0);
+ const suter=Math.max(0,Math.min(7,Number(document.getElementById('measureSuter').value)||0));
+ const total=feet*12+inches+suter/8;
+ document.getElementById('measureResult').textContent=Number(total.toFixed(3)).toString();
+ return total;
+}
+function applyMeasurement(which){
+ const first=document.querySelector('.window');
+ if(!first){document.getElementById('measureStatus').textContent='پہلے نئی Window شامل کریں۔';return}
+ first.querySelector(which==='width'?'.width':'.height').value=Number(measurementInches().toFixed(3));
+ calculate();
+ document.getElementById('measureStatus').textContent=(which==='width'?'چوڑائی':'اونچائی')+' پہلی ونڈو میں درج ہوگئی۔';
+}
+function val(id){return Math.max(0,Number(document.getElementById(id).value)||0)}
+function money(n){return 'Rs '+Math.round(n).toLocaleString('en-PK')}
+function calculate(){
+ let al=0,glass=0,hardware=0,labour=0;
+ document.querySelectorAll('.window').forEach(w=>{
+ const q=Math.max(1,Number(w.querySelector('.qty').value)||1);
+ const area=(Number(w.querySelector('.width').value)||0)*(Number(w.querySelector('.height').value)||0)/144*q;
+ const run=(Number(w.querySelector('.running').value)||0)*q;
+ al+=run*val('alRate')*(1-Math.min(100,val('discount'))/100);
+ glass+=area*val('glassRate')*(1-Math.min(100,val('glassDiscount'))/100);
+ hardware+=q*((Number(w.querySelector('.hardware').value)||0)||val('hardwareRate'));
+ labour+=run*val('labourRate');
+ });
+ document.getElementById('alTotal').textContent=money(al);
+ document.getElementById('glassTotal').textContent=money(glass);
+ document.getElementById('hardwareTotal').textContent=money(hardware);
+ document.getElementById('labourTotal').textContent=money(labour);
+ const total=al+glass+hardware+labour;
+ document.getElementById('grandTotal').textContent=money(total);
+ const final=val('finalDeal')||total;
+ document.getElementById('balance').textContent=money(Math.max(0,final-val('advance')));
+ return {al,glass,hardware,labour,total,final,balance:Math.max(0,final-val('advance'))};
+}
+function payload(){const totals=calculate();return {bismillah:document.getElementById('bismillah').checked,customer:document.getElementById('customer').value,mobile:document.getElementById('mobile').value,date:document.getElementById('date').value,estimateNo:document.getElementById('estimateNo').value,rates:{alRate:val('alRate'),glassRate:val('glassRate'),hardwareRate:val('hardwareRate'),labourRate:val('labourRate'),discount:val('discount'),glassDiscount:val('glassDiscount')},windows:[...document.querySelectorAll('.window')].map(w=>({section:w.querySelector('.section').value,qty:Number(w.querySelector('.qty').value)||1,width:Number(w.querySelector('.width').value)||0,height:Number(w.querySelector('.height').value)||0,running:Number(w.querySelector('.running').value)||0,hardware:Number(w.querySelector('.hardware').value)||0})),advance:val('advance'),finalDeal:val('finalDeal'),totals,stamp:new Date().toISOString()}}
+function saveEstimate(){
+ const p=payload();
+ if(!p.customer.trim()){document.getElementById('status').textContent='پہلے کسٹمر کا نام لکھیں۔';return}
+ let arr=JSON.parse(localStorage.getItem('gEstimateSaved')||'[]');
+ if(loadedEstimateIndex!==null && arr[loadedEstimateIndex]){
+   arr[loadedEstimateIndex]=p;
+   document.getElementById('status').textContent='پرانا اندازہ اپ ڈیٹ ہوگیا۔';
+ }else{
+   arr.unshift(p);
+   document.getElementById('status').textContent='نیا اندازہ محفوظ ہوگیا۔';
+ }
+ localStorage.setItem('gEstimateSaved',JSON.stringify(arr));
+ loadedEstimateIndex=null;
+ renderSaved();
+}
+function renderSaved(){let all=JSON.parse(localStorage.getItem('gEstimateSaved')||'[]');const q=(document.getElementById('search').value||'').toLowerCase();const arr=all.map((x,i)=>({...x,_index:i})).filter(x=>(x.customer+' '+x.mobile).toLowerCase().includes(q));document.getElementById('savedList').innerHTML=arr.length?'<table><thead><tr><th>Customer</th><th>Date</th><th>Total</th><th>Action</th></tr></thead><tbody>'+arr.map(x=>`<tr><td>${escapeHtml(x.customer)}<br>${escapeHtml(x.mobile||'')}</td><td>${escapeHtml(x.date||'')}</td><td>${money(x.finalDeal||x.totals.total)}</td><td><button class="secondary" onclick="loadEstimate(${x._index})">Open</button> <button class="secondary" onclick="deleteEstimate(${x._index})">Delete</button></td></tr>`).join('')+'</tbody></table>':'<p class="note">کوئی محفوظ اندازہ نہیں ملا۔</p>'}
+function loadEstimate(i){const arr=JSON.parse(localStorage.getItem('gEstimateSaved')||'[]');const p=arr[i];if(!p)return;loadedEstimateIndex=i;document.getElementById('bismillah').checked=p.bismillah!==false;document.getElementById('customer').value=p.customer||'';document.getElementById('mobile').value=p.mobile||'';document.getElementById('date').value=p.date||'';document.getElementById('estimateNo').value=p.estimateNo||'';for(const k of ['alRate','glassRate','hardwareRate','labourRate','discount','glassDiscount'])document.getElementById(k).value=(p.rates&&p.rates[k]!==undefined)?p.rates[k]:0;document.getElementById('advance').value=p.advance||0;document.getElementById('finalDeal').value=p.finalDeal||'';document.getElementById('windows').innerHTML='';count=0;(p.windows||[]).forEach(w=>addWindow(w));calculate();document.getElementById('status').textContent='محفوظ اندازہ کھل گیا۔ تبدیلی کے بعد Save دبائیں؛ اسی ریکارڈ میں تبدیلی محفوظ ہوگی۔';window.scrollTo({top:0,behavior:'smooth'})}
+function deleteEstimate(i){if(!confirm('یہ محفوظ اندازہ حذف کریں؟'))return;const arr=JSON.parse(localStorage.getItem('gEstimateSaved')||'[]');arr.splice(i,1);localStorage.setItem('gEstimateSaved',JSON.stringify(arr));if(loadedEstimateIndex===i)loadedEstimateIndex=null;renderSaved()}
+function exportBackup(){
+ const saved=JSON.parse(localStorage.getItem('gEstimateSaved')||'[]');
+ const blob=new Blob([JSON.stringify({app:'G Estimate Calculator',version:2,exportedAt:new Date().toISOString(),estimates:saved},null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='G-Estimate-Backup-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+ document.getElementById('status').textContent='بیک اپ فائل ڈاؤن لوڈ کرنے کی کوشش کی گئی ہے۔ Downloads فولڈر چیک کریں۔';
+}
+function importBackup(event){
+ const file=event.target.files&&event.target.files[0];if(!file)return;
+ const reader=new FileReader();reader.onload=()=>{try{
+  const parsed=JSON.parse(reader.result);const incoming=Array.isArray(parsed)?parsed:parsed.estimates;
+  if(!Array.isArray(incoming)||incoming.some(x=>!x||typeof x!=='object'||!Array.isArray(x.windows)||!x.totals))throw new Error('invalid');
+  if(!confirm('بیک اپ میں '+incoming.length+' اندازے ہیں۔ موجودہ اندازوں کے ساتھ شامل کریں؟ Cancel دبانے سے کچھ تبدیل نہیں ہوگا۔'))return;
+  const existing=JSON.parse(localStorage.getItem('gEstimateSaved')||'[]');
+  localStorage.setItem('gEstimateSaved',JSON.stringify([...incoming,...existing]));renderSaved();document.getElementById('status').textContent='بیک اپ کے اندازے واپس آگئے ہیں۔';
+ }catch(e){document.getElementById('status').textContent='یہ بیک اپ فائل درست نہیں۔ اصل G Estimate Backup فائل منتخب کریں۔';}finally{event.target.value='';}};reader.readAsText(file);
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function shareEstimate(){const p=payload();const textOut=`${document.getElementById('bismillah').checked?'بسم اللہ الرحمن الرحیم\n':''}Prime Aluminum & Glass Phularwan\nG Estimate Calculator\nCustomer: ${p.customer}\nMobile: ${p.mobile}\nDate: ${p.date}\nAluminium: ${money(p.totals.al)}\nGlass: ${money(p.totals.glass)}\nHardware: ${money(p.totals.hardware)}\nLabour: ${money(p.totals.labour)}\nOriginal Estimate: ${money(p.totals.total)}\nFinal Deal: ${money(p.finalDeal||p.totals.total)}\nAdvance: ${money(p.advance)}\nBalance: ${money(p.totals.balance)}\nWastage: 0`;if(navigator.share)navigator.share({title:'G Estimate Calculator',text:textOut}).catch(()=>printText(textOut));else printText(textOut)}
+function printText(t){const w=window.open('','_blank');if(!w){document.getElementById('status').textContent='Share popup block ہوا؛ براہ کرم browser popup allow کریں۔';return}w.document.write('<pre style="font:16px Arial;white-space:pre-wrap;padding:20px">'+escapeHtml(t)+'</pre><button onclick="window.print()">Print / Save PDF</button>')}
+function printEstimate(){
+ const p=payload();
+ const bismillah=document.getElementById('bismillah').checked?'<div class="bismillah">بسم اللہ الرحمن الرحیم</div>':'';
+ const rows=p.windows.map((x,i)=>{
+   const area=x.width*x.height/144*x.qty;
+   const run=x.running*x.qty;
+   const al=run*p.rates.alRate*(1-Math.min(100,p.rates.discount)/100);
+   const glass=area*p.rates.glassRate*(1-Math.min(100,p.rates.glassDiscount)/100);
+   const hardware=x.qty*(x.hardware||p.rates.hardwareRate);
+   const labour=run*p.rates.labourRate;
+   return `<tr><td>${i+1}</td><td>${escapeHtml(x.section)}</td><td>${x.qty}</td><td>${x.width} × ${x.height}</td><td>${area.toFixed(2)}</td><td>${run.toFixed(2)}</td><td>${money(al)}</td><td>${money(glass)}</td><td>${money(hardware)}</td><td>${money(labour)}</td></tr>`;
+ }).join('');
+ const w=window.open('','_blank');
+ if(!w){document.getElementById('status').textContent='PDF کے لیے browser میں pop-ups allow کریں۔';return}
+ w.document.write(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Estimate ${escapeHtml(p.estimateNo||'')}</title><style>
+ body{font-family:Arial,sans-serif;color:#17212b;margin:24px}h1,h2,p{margin:4px 0}header{text-align:center;border-bottom:2px solid #16324f;padding-bottom:12px;margin-bottom:16px}.bismillah{font-size:22px;text-align:center;margin:12px}.meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0}.meta div{padding:8px;background:#f4f7fa;border-radius:5px}table{width:100%;border-collapse:collapse;font-size:11px;margin-top:12px}th,td{border:1px solid #cbd5e1;padding:7px 4px;text-align:left}th{background:#edf2f7}.totals{margin:18px 0 0 auto;width:320px}.totals div{display:flex;justify-content:space-between;padding:7px;border-bottom:1px solid #ddd}.grand{font-weight:bold;font-size:18px}.foot{margin-top:28px;color:#64748b;font-size:12px}@media print{body{margin:10mm}button{display:none}table{font-size:9px}}</style></head><body>
+ <header>${bismillah}<h1>Prime Aluminum &amp; Glass</h1><p>Phularwan</p><h2>Estimate / تخمینہ</h2></header>
+ <div class="meta"><div><b>Customer:</b> ${escapeHtml(p.customer||'—')}</div><div><b>Mobile:</b> ${escapeHtml(p.mobile||'—')}</div><div><b>Date:</b> ${escapeHtml(p.date||'—')}</div><div><b>Estimate No:</b> ${escapeHtml(p.estimateNo||'—')}</div></div>
+ <table><thead><tr><th>#</th><th>Section</th><th>Qty</th><th>W × H (in)</th><th>Glass sq ft</th><th>Run ft</th><th>Aluminium</th><th>Glass</th><th>Hardware</th><th>Labour</th></tr></thead><tbody>${rows}</tbody></table>
+ <div class="totals"><div><span>Aluminium</span><b>${money(p.totals.al)}</b></div><div><span>Glass</span><b>${money(p.totals.glass)}</b></div><div><span>Hardware</span><b>${money(p.totals.hardware)}</b></div><div><span>Labour</span><b>${money(p.totals.labour)}</b></div><div><span>Estimate Total</span><b>${money(p.totals.total)}</b></div><div><span>Final Deal</span><b>${money(p.finalDeal||p.totals.total)}</b></div><div><span>Advance</span><b>${money(p.advance)}</b></div><div class="grand"><span>Balance</span><b>${money(p.totals.balance)}</b></div></div>
+ <p class="foot">Wastage: not included. Thank you for your business.</p><button onclick="window.print()">Print / Save as PDF</button></body></html>`);
+ w.document.close();
+}
+
+function newEstimate(){if(!confirm('نیا اندازہ شروع کریں؟'))return;loadedEstimateIndex=null;['customer','mobile','estimateNo','advance','finalDeal'].forEach(id=>document.getElementById(id).value='');document.getElementById('windows').innerHTML='';count=0;addWindow();document.getElementById('status').textContent='نیا اندازہ تیار ہے۔'}
+['alRate','glassRate','hardwareRate','labourRate','discount','glassDiscount'].forEach(id=>document.getElementById(id).addEventListener('input',calculate));
+document.getElementById('date').value=new Date().toISOString().slice(0,10);['measureFeet','measureInches','measureSuter'].forEach(id=>document.getElementById(id).addEventListener('input',measurementInches));
+if(!document.getElementById('date').value)document.getElementById('date').value=new Date().toISOString().slice(0,10);addWindow();renderSaved();
+</script>
+</body></html>
