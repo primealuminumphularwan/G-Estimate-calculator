@@ -3,343 +3,243 @@
 <html lang="ur">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Prime Aluminum Phularwan</title>
 <style>
 *{box-sizing:border-box}
-body{font-family:Arial,sans-serif;background:#f1f4f6;margin:0;padding:12px;color:#17212b}
-header{background:#123c50;color:white;text-align:center;padding:20px;border-radius:12px}
-h1{font-size:23px}
-h2{font-size:19px;color:#123c50}
-.card{background:white;padding:14px;margin:12px 0;border-radius:12px;box-shadow:0 2px 8px #0001}
-label{display:block;font-size:14px;margin:9px 0 4px}
-input,select{width:100%;padding:11px;border:1px solid #bbb;border-radius:7px;font-size:15px;background:white}
-button{padding:12px;border:0;border-radius:8px;background:#14536b;color:white;font-size:15px;margin:5px 2px}
-.secondary{background:#52636d}
-.danger{background:#a83232}
-.total{font-size:19px;font-weight:bold;color:#08744b}
-.item{border:1px solid #ccd5da;padding:12px;margin:12px 0;border-radius:9px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.actions{display:flex;flex-wrap:wrap;gap:5px}
-.section-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.section-card{border:1px solid #ccd5da;border-radius:9px;padding:8px;min-width:0}
-.section-card img{width:100%;height:75px;object-fit:contain;background:#f1f4f6;border-radius:6px}
-.section-card .pick{display:flex;align-items:center;gap:6px}
-.section-card .pick input{width:20px;height:20px}
-.section-card label{margin:4px 0}
-.section-card input[type=file]{font-size:11px;padding:4px}
-.small{font-size:12px;color:#64727a}
-@media print{
-.no-print,button{display:none!important}
-body{background:white;padding:0}
-.card{box-shadow:none;border:1px solid #ddd}
-}
+body{font-family:Arial,sans-serif;background:#eef2f5;margin:0;padding:12px;color:#17212b}
+header{background:#123d50;color:white;padding:18px;border-radius:12px;text-align:center}
+h2{font-size:19px}
+h3{background:#dce8ed;padding:10px;border-radius:7px}
+.box{background:white;padding:13px;margin-top:12px;border-radius:10px}
+label{display:block;font-size:14px;margin:10px 0 5px}
+input,select{width:100%;padding:11px;border:1px solid #bbc8ce;border-radius:7px;font-size:16px}
+button{padding:12px;border:0;border-radius:8px;background:#14566b;color:white;font-size:15px;margin:5px 2px}
+.green{background:#16834d}
+.orange{background:#b76b13}
+.red{background:#b83232}
+.window{border:1px solid #ccd7dc;padding:12px;border-radius:9px;margin:12px 0}
+.result{background:#e7f4eb;padding:13px;border-radius:9px;line-height:2}
+.total{font-size:23px;font-weight:bold;color:#12613b}
+small{color:#58666d}
 </style>
 </head>
 <body>
-
 <header>
-<div>بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
-<h1>Prime Aluminum Phularwan</h1>
-<div>Estimate & Calculation</div>
+<h2>Prime Aluminum & Glass</h2>
+Phularwan
+<div>بسم اللہ الرحمن الرحیم</div>
 </header>
 
-<div class="card">
-<h2>Customer Information / کسٹمر</h2>
-<div class="grid">
-<div><label>Customer Name</label><input id="customer"></div>
-<div><label>Mobile Number</label><input id="mobile"></div>
-</div>
-<label>Date / تاریخ</label>
+<div class="box">
+<h3>Customer Information / کسٹمر کی معلومات</h3>
+<label>Customer Name</label>
+<input id="customer" placeholder="کسٹمر کا نام">
+<label>Mobile Number</label>
+<input id="mobile" placeholder="موبائل نمبر">
+<label>Date</label>
 <input id="date" type="date">
-<label>Estimate Number</label>
-<input id="estimateNo">
 </div>
 
-<div class="card">
-<h2>Work Details / کام کی تفصیل</h2>
-<div id="items"></div>
-<button class="no-print" onclick="addItem()">+ نئی Window شامل کریں</button>
-<button class="no-print" onclick="addItem('shower')">+ Shower Cabin</button>
-<button class="no-print" onclick="addItem('glass')">+ 12mm Glass Work</button>
+<div class="box">
+<h3>Window Estimate / ونڈو کا حساب</h3>
+<div id="windows"></div>
+<button onclick="addWindow()">+ نئی Window شامل کریں</button>
 </div>
 
-<div class="card">
-<h2>Discount & Payment / ادائیگی</h2>
+<div class="box">
+<h3>Rates / ریٹس</h3>
+<label>Aluminium Rate (فی مربع فٹ)</label>
+<input id="alRate" type="number" value="0">
+<label>Glass Rate (فی مربع فٹ)</label>
+<input id="glassRate" type="number" value="0">
+<label>Hardware Rate (فی ونڈو)</label>
+<input id="hardwareRate" type="number" value="0">
+<label>Labour Rate (فی مربع فٹ)</label>
+<input id="labourRate" type="number" value="0">
 <label>Aluminium Discount (%)</label>
-<input id="discount" type="number" value="0" oninput="calculate()">
+<input id="discount" type="number" value="0">
+</div>
+
+<div class="box">
+<h3>Georgian Bar / جورجین بار</h3>
+<label><input id="georgian" type="checkbox" style="width:auto"> Georgian Bar شامل کریں</label>
+<label>Georgian Bar Rate (فی مربع فٹ)</label>
+<input id="georgianRate" type="number" value="0">
+</div>
+
+<div class="box">
+<h3>Other Charges / دیگر اخراجات</h3>
 <label>Carriage / کرایہ</label>
-<input id="carriage" type="number" value="0" oninput="calculate()">
-<label>Final Deal Price</label>
-<input id="finalPrice" type="number" oninput="calculate()">
+<input id="carriage" type="number" value="0">
+<label>Shower Cabin Extra Charges</label>
+<input id="showerExtra" type="number" value="0">
+</div>
+
+<div class="box">
+<button class="green" onclick="calculate()">Calculate Estimate / حساب کریں</button>
+<div class="result" id="result">ابھی Estimate نہیں بنایا گیا۔</div>
+<label>Final Deal Price / طے شدہ قیمت</label>
+<input id="finalPrice" type="number" placeholder="خالی چھوڑیں تو اصل قیمت استعمال ہوگی">
 <label>Advance / ایڈوانس</label>
-<input id="advance" type="number" value="0" oninput="calculate()">
+<input id="advance" type="number" value="0">
+<div id="balance"></div>
 </div>
 
-<div class="card">
-<h2>Final Calculation / مکمل حساب</h2>
-<p>Aluminium: <b id="alTotal">0</b></p>
-<p>Aluminium Discount: <b id="discountTotal">0</b></p>
-<p>Glass: <b id="glassTotal">0</b></p>
-<p>Hardware: <b id="hardwareTotal">0</b></p>
-<p>Labour: <b id="labourTotal">0</b></p>
-<p>Carriage: <b id="carriageTotal">0</b></p>
-<hr>
-<p class="total">Grand Total: Rs. <span id="grand">0</span></p>
-<p class="total">Advance: Rs. <span id="advanceShow">0</span></p>
-<p class="total">Balance: Rs. <span id="balance">0</span></p>
+<div class="box">
+<button class="green" onclick="saveEstimate()">Save Estimate</button>
+<button onclick="shareEstimate()">Share / PDF</button>
+<button class="orange" onclick="newEstimate()">New Estimate</button>
 </div>
 
-<div class="card no-print">
-<h2>Save & Share</h2>
-<label>Search Customer</label>
-<input id="search" oninput="showSaved()">
+<div class="box">
+<h3>Saved Customers / محفوظ Estimate</h3>
+<input id="search" placeholder="نام یا موبائل سے تلاش کریں" oninput="showSaved()">
 <div id="saved"></div>
-<button onclick="saveEstimate()">Save Estimate</button>
-<button onclick="window.print()">Print / PDF</button>
-<button onclick="shareEstimate()">Share</button>
-<button class="secondary" onclick="newEstimate()">New Estimate</button>
-</div>
-
-<div class="card no-print">
-<h2>Section Catalogue / سیکشن کی فہرست</h2>
-<p class="small">ہر Section کی تصویر اپ لوڈ کریں۔ تصویر اسی موبائل میں محفوظ ہوگی۔</p>
-<label>نیا Section شامل کریں</label>
-<div class="grid">
-<input id="newSection" placeholder="Section Name">
-<button onclick="addCustomSection()">Add Section</button>
-</div>
 </div>
 
 <script>
-let count=0;
+let lastTotal=0;
+let savedData=[];
 
-const baseSections=[
-'DC26F','DC26C','DC30F','M23','M28',
-'M24','D29','D54F','D50A','Other'
-];
+document.getElementById('date').valueAsDate=new Date();
 
-let sections=JSON.parse(localStorage.getItem('primeSections')||'null')||baseSections;
-let sectionImages=JSON.parse(localStorage.getItem('primeSectionImages')||'{}');
-
-const money=n=>Number(n||0).toLocaleString('en-PK',{maximumFractionDigits:2});
-function val(id){return Number(document.getElementById(id).value)||0}
-function safe(s){
-return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-
-function lengths(s){
-return s.toUpperCase().endsWith('F')?
-['15 ft','17 ft','19 ft']:
-['14 ft','16 ft','18 ft'];
-}
-
-function renderSections(el){
-let box=el.querySelector('.section-grid');
-box.innerHTML=sections.map((s,i)=>{
-let img=sectionImages[s]||'';
-return `
-<div class="section-card">
-<img src="${img||'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%2275%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23e9eef1%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 fill=%22%2364757e%22 font-size=%2211%22%3ESection Photo%3C/text%3E%3C/svg%3E'}" alt="${safe(s)}">
-<label class="pick">
-<input type="checkbox" class="section-check" value="${safe(s)}">
-<b>${safe(s)}</b>
-</label>
-<label class="small">Length / لمبائی</label>
-<select class="section-length">
-${lengths(s).map(l=>`<option>${l}</option>`).join('')}
+function addWindow(){
+let div=document.createElement('div');
+div.className='window';
+div.innerHTML=`
+<h3>Window Details</h3>
+<label>Window Type</label>
+<select class="type">
+<option>Fixed Window</option>
+<option>Sliding Window</option>
+<option>Openable Window</option>
+<option>Shower Cabin</option>
 </select>
-<label class="small">تصویر اپ لوڈ کریں</label>
-<input type="file" accept="image/*" onchange="uploadSectionImage(event,${i})">
-</div>`;
-}).join('');
-}
-
-function uploadSectionImage(event,index){
-let file=event.target.files[0];
-if(!file)return;
-if(file.size>1500000){
-alert('براہ کرم 1.5 MB سے چھوٹی تصویر منتخب کریں');
-return;
-}
-let reader=new FileReader();
-reader.onload=function(){
-sectionImages[sections[index]]=reader.result;
-try{
-localStorage.setItem('primeSectionImages',JSON.stringify(sectionImages));
-event.target.closest('.section-card').querySelector('img').src=reader.result;
-}catch(e){
-alert('تصویر محفوظ نہیں ہو سکی۔ چھوٹی تصویر استعمال کریں۔');
-}
-};
-reader.readAsDataURL(file);
-}
-
-function addCustomSection(){
-let s=document.getElementById('newSection').value.trim();
-if(!s)return alert('Section کا نام لکھیں');
-if(sections.includes(s))return alert('یہ Section پہلے سے موجود ہے');
-sections.push(s);
-localStorage.setItem('primeSections',JSON.stringify(sections));
-document.querySelectorAll('.item').forEach(renderSections);
-document.getElementById('newSection').value='';
-alert('نیا Section شامل ہو گیا');
-}
-
-function addItem(type='window'){
-count++;
-let d=document.createElement('div');
-d.className='item';
-d.innerHTML=`
-<h3>${type==='shower'?'Shower Cabin':type==='glass'?'12mm Glass Work':'Window / Door'} #${count}</h3>
-<label>Work Type</label>
-<select class="type" onchange="calculate()">
-<option value="window" ${type==='window'?'selected':''}>Window / Door</option>
-<option value="shower" ${type==='shower'?'selected':''}>Shower Cabin</option>
-<option value="glass" ${type==='glass'?'selected':''}>12mm Glass Work</option>
+<label>Section</label>
+<select class="section">
+<option>DC26F</option><option>DC30F</option>
+<option>M23</option><option>M28</option>
+<option>M24</option><option>D29</option>
+<option>D54F</option><option>D50A</option>
+<option>Other</option>
 </select>
-<label>Description / تفصیل</label>
-<input class="desc" placeholder="Room or work details">
-<div class="grid">
-<div><label>Width (Inches)</label><input class="w" type="number" value="0" oninput="calculate()"></div>
-<div><label>Height (Inches)</label><input class="h" type="number" value="0" oninput="calculate()"></div>
-</div>
-<label>Quantity</label>
-<input class="qty" type="number" value="1" min="1" oninput="calculate()">
-<label>Sections / ایک یا زیادہ Sections منتخب کریں</label>
-<div class="section-grid"></div>
-<label>Glass Thickness</label>
-<select class="thickness">
-<option>5mm</option><option>6mm</option>
-<option>8mm</option><option>10mm</option>
-<option selected>12mm</option>
-</select>
-<label>Aluminium Running Feet (manual)</label>
-<input class="running" type="number" value="0" oninput="calculate()">
-<label>Aluminium Rate per Running Foot</label>
-<input class="alrate" type="number" value="0" oninput="calculate()">
-<label>Glass Rate per Square Foot</label>
-<input class="grate" type="number" value="0" oninput="calculate()">
-<label>Hardware Amount</label>
-<input class="hardware" type="number" value="0" oninput="calculate()">
-<label>Labour Amount</label>
-<input class="labour" type="number" value="0" oninput="calculate()">
-<p>Glass Area: <b class="area">0</b> sq ft</p>
-<p>Item Total: Rs. <b class="itemtotal">0</b></p>
-<button class="danger no-print" onclick="this.parentElement.remove();calculate()">Remove Item</button>`;
-document.getElementById('items').appendChild(d);
-renderSections(d);
-calculate();
+<label>Width (Inches)</label>
+<input class="width" type="number" value="0">
+<label>Height (Inches)</label>
+<input class="height" type="number" value="0">
+<label>Quantity / تعداد</label>
+<input class="qty" type="number" value="1">
+<button class="red" onclick="this.parentElement.remove()">Remove Window</button>
+`;
+document.getElementById('windows').appendChild(div);
 }
+addWindow();
 
 function calculate(){
-let al=0,glass=0,hardware=0,labour=0;
-document.querySelectorAll('.item').forEach(el=>{
-let q=Number(el.querySelector('.qty').value)||0;
-let w=Number(el.querySelector('.w').value)||0;
-let h=Number(el.querySelector('.h').value)||0;
-let area=(w*h/144)*q;
-let a=(Number(el.querySelector('.running').value)||0)*(Number(el.querySelector('.alrate').value)||0);
-let g=area*(Number(el.querySelector('.grate').value)||0);
-let hw=Number(el.querySelector('.hardware').value)||0;
-let lb=Number(el.querySelector('.labour').value)||0;
-al+=a;glass+=g;hardware+=hw;labour+=lb;
-el.querySelector('.area').textContent=money(area);
-el.querySelector('.itemtotal').textContent=money(a+g+hw+lb);
+let area=0,hardware=0,details='';
+document.querySelectorAll('.window').forEach((w,i)=>{
+let width=+w.querySelector('.width').value;
+let height=+w.querySelector('.height').value;
+let qty=+w.querySelector('.qty').value;
+let sqft=(width/12)*(height/12)*qty;
+area+=sqft;
+hardware+=qty;
+details+=`<br>Window ${i+1}: ${sqft.toFixed(2)} Sq Ft`;
 });
-let disc=al*val('discount')/100;
-let cart=val('carriage');
-let subtotal=al-disc+glass+hardware+labour+cart;
-let total=val('finalPrice')>0?val('finalPrice'):subtotal;
-let adv=val('advance');
-document.getElementById('alTotal').textContent=money(al);
-document.getElementById('discountTotal').textContent=money(disc);
-document.getElementById('glassTotal').textContent=money(glass);
-document.getElementById('hardwareTotal').textContent=money(hardware);
-document.getElementById('labourTotal').textContent=money(labour);
-document.getElementById('carriageTotal').textContent=money(cart);
-document.getElementById('grand').textContent=money(total);
-document.getElementById('advanceShow').textContent=money(adv);
-document.getElementById('balance').textContent=money(total-adv);
+let al=area*(+alRate.value);
+let disc=al*(+discount.value)/100;
+let aluminium=al-disc;
+let glass=area*(+glassRate.value);
+let hw=hardware*(+hardwareRate.value);
+let labour=area*(+labourRate.value);
+let gb=georgian.checked?area*(+georgianRate.value):0;
+let carriage=+document.getElementById('carriage').value;
+let shower=+document.getElementById('showerExtra').value;
+lastTotal=aluminium+glass+hw+labour+gb+carriage+shower;
+let html=`
+<strong>Total Area:</strong> ${area.toFixed(2)} Sq Ft
+${details}
+<hr>
+Aluminium: Rs. ${aluminium.toFixed(0)}<br>
+Glass: Rs. ${glass.toFixed(0)}<br>
+Hardware: Rs. ${hw.toFixed(0)}<br>
+Labour: Rs. ${labour.toFixed(0)}<br>
+Georgian Bar: Rs. ${gb.toFixed(0)}<br>
+Carriage: Rs. ${carriage}<br>
+Shower Extra: Rs. ${shower}<br>
+<hr><div class="total">Grand Total: Rs. ${lastTotal.toFixed(0)}</div>
+`;
+document.getElementById('result').innerHTML=html;
+updateBalance();
+return html;
 }
 
-function data(){
+function updateBalance(){
+let price=+document.getElementById('finalPrice').value||lastTotal;
+let advance=+document.getElementById('advance').value;
+document.getElementById('balance').innerHTML=
+`<strong>Final Price:</strong> Rs. ${price}<br>
+<strong>Advance:</strong> Rs. ${advance}<br>
+<strong>Remaining:</strong> Rs. ${price-advance}`;
+}
+document.getElementById('finalPrice').addEventListener('input',updateBalance);
+document.getElementById('advance').addEventListener('input',updateBalance);
+
+function getRecord(){
 return {
-customer:document.getElementById('customer').value,
-mobile:document.getElementById('mobile').value,
-date:document.getElementById('date').value,
-estimateNo:document.getElementById('estimateNo').value,
-discount:val('discount'),carriage:val('carriage'),
-finalPrice:val('finalPrice'),advance:val('advance'),
-items:[...document.querySelectorAll('.item')].map(el=>({
-type:el.querySelector('.type').value,
-desc:el.querySelector('.desc').value,
-w:el.querySelector('.w').value,
-h:el.querySelector('.h').value,
-qty:el.querySelector('.qty').value,
-sections:[...el.querySelectorAll('.section-check:checked')].map(c=>({
-name:c.value,
-length:c.closest('.section-card').querySelector('.section-length').value
-})),
-thickness:el.querySelector('.thickness').value,
-running:el.querySelector('.running').value,
-alrate:el.querySelector('.alrate').value,
-grate:el.querySelector('.grate').value,
-hardware:el.querySelector('.hardware').value,
-labour:el.querySelector('.labour').value
-})),
-total:document.getElementById('grand').textContent
+customer:customer.value,mobile:mobile.value,date:date.value,
+result:result.innerHTML,
+finalPrice:+finalPrice.value||lastTotal,
+advance:+advance.value
 };
 }
-
 function saveEstimate(){
-let d=data();
-if(!d.customer)return alert('Please enter customer name');
-let all=JSON.parse(localStorage.getItem('primeEstimates')||'[]');
-all.push(d);
-localStorage.setItem('primeEstimates',JSON.stringify(all));
+if(!lastTotal){alert('پہلے Calculate کریں');return}
+savedData=JSON.parse(localStorage.getItem('primeEstimates')||'[]');
+savedData.unshift(getRecord());
+localStorage.setItem('primeEstimates',JSON.stringify(savedData));
+alert('Estimate محفوظ ہوگیا');
 showSaved();
-alert('Estimate saved successfully');
 }
-
 function showSaved(){
-let all=JSON.parse(localStorage.getItem('primeEstimates')||'[]');
-let s=document.getElementById('search').value.toLowerCase();
-let filtered=all.filter(x=>(x.customer+' '+x.mobile).toLowerCase().includes(s));
-document.getElementById('saved').innerHTML=filtered.map(x=>
-`<p>${safe(x.customer)} - ${safe(x.mobile)} - Rs. ${safe(x.total)}</p>`
-).join('');
+savedData=JSON.parse(localStorage.getItem('primeEstimates')||'[]');
+let q=search.value.toLowerCase();
+saved.innerHTML='';
+savedData.forEach((r,i)=>{
+if((r.customer||'').toLowerCase().includes(q)||(r.mobile||'').includes(q)){
+let b=document.createElement('button');
+b.textContent=(r.customer||'Customer')+' - '+r.date;
+b.onclick=()=>loadRecord(i);
+saved.appendChild(b);
 }
-
+});
+}
+function loadRecord(i){
+let r=savedData[i];
+customer.value=r.customer;mobile.value=r.mobile;date.value=r.date;
+result.innerHTML=r.result;
+lastTotal=r.finalPrice;
+finalPrice.value=r.finalPrice;advance.value=r.advance;
+updateBalance();
+}
 function shareEstimate(){
-let d=data();
-let msg=`Prime Aluminum Phularwan
-Customer: ${d.customer}
-Mobile: ${d.mobile}
-Date: ${d.date}
-Total: Rs. ${d.total}
-Advance: Rs. ${d.advance}
-Balance: Rs. ${money(Number(d.total.replace(/,/g,''))-d.advance)}`;
-if(navigator.share)navigator.share({title:'Estimate',text:msg}).catch(()=>{});
-else if(navigator.clipboard)navigator.clipboard.writeText(msg).then(()=>alert('Estimate copied'));
-else alert(msg);
+if(!lastTotal){alert('پہلے Calculate کریں');return}
+window.print();
 }
-
 function newEstimate(){
-if(!confirm('Start a new estimate? Save current estimate first.'))return;
-document.getElementById('customer').value='';
-document.getElementById('mobile').value='';
-document.getElementById('estimateNo').value='';
-document.getElementById('items').innerHTML='';
-document.getElementById('discount').value=0;
-document.getElementById('carriage').value=0;
-document.getElementById('finalPrice').value='';
-document.getElementById('advance').value=0;
-addItem();
+if(confirm('نیا Estimate شروع کریں؟')){
+document.querySelectorAll('input').forEach(x=>{
+if(x.type==='checkbox')x.checked=false;
+else if(x.type!=='date' && x.id!=='alRate' && x.id!=='glassRate' && x.id!=='hardwareRate' && x.id!=='labourRate' && x.id!=='discount' && x.id!=='georgianRate' && x.id!=='carriage' && x.id!=='showerExtra')x.value='';
+});
+document.getElementById('windows').innerHTML='';
+addWindow();
+result.innerHTML='ابھی Estimate نہیں بنایا گیا۔';
+lastTotal=0;
 }
-
-document.getElementById('date').value=new Date().toISOString().slice(0,10);
-addItem();
+}
+showSaved();
 </script>
 </body>
 </html>
