@@ -1,9 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="ur">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#123c50">
+<link rel="manifest" href="manifest.json">
 <title>Prime Aluminum Phularwan</title>
 <style>
 *{box-sizing:border-box}
@@ -11,14 +12,19 @@ body{font-family:Arial,sans-serif;background:#f1f4f6;margin:0;padding:12px;color
 header{background:#123c50;color:white;text-align:center;padding:20px;border-radius:12px}
 h1{font-size:23px;margin:5px}
 h2{font-size:19px;color:#123c50}
+h3{margin:0 0 8px;color:#123c50}
 .card{background:white;padding:14px;margin:12px 0;border-radius:12px;box-shadow:0 2px 8px #0001}
-label{display:block;font-size:14px;margin:9px 0 4px}
-input,select{width:100%;padding:11px;border:1px solid #bbb;border-radius:7px;font-size:15px;background:white}
-button{padding:12px;border:0;border-radius:8px;background:#14536b;color:white;font-size:15px;margin:5px 2px;cursor:pointer}
+label{display:block;font-size:14px;margin:8px 0 4px}
+input,select{width:100%;padding:10px;border:1px solid #bbb;border-radius:7px;font-size:15px;background:white}
+button{padding:11px 13px;border:0;border-radius:8px;background:#14536b;color:white;font-size:15px;margin:5px 2px;cursor:pointer}
 .secondary{background:#52636d}
 .danger{background:#a83232}
+.small-btn{padding:7px 10px;font-size:13px;margin:4px 0}
 .total{font-size:19px;font-weight:bold;color:#08744b}
-.item{border:1px solid #ccd5da;padding:12px;margin:12px 0;border-radius:9px}
+.item{border:1px solid #ccd5da;padding:12px;margin:12px 0;border-radius:9px;background:#fafcfd}
+.sec-box{margin:10px 0;padding:10px;background:#f1f5f8;border:1px solid #d5dfe6;border-radius:8px}
+.sec-row{background:white;border:1px solid #dde4e9;border-radius:7px;padding:9px;margin:8px 0}
+.sec-sub{margin:6px 0 0;font-weight:bold;color:#14536b;font-size:14px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .actions{display:flex;flex-wrap:wrap;gap:5px}
 small{color:#64727a}
@@ -61,8 +67,9 @@ body{background:white;padding:0}
 
 <div class="card">
 <h2>Work Details / کام کی تفصیل</h2>
+<p><small>Width, Height اور Quantity لکھنے پر Running Feet اور Estimate خود بخود بنے گا۔</small></p>
 <div id="items"></div>
-<button class="no-print" onclick="addItem()">+ نئی Window شامل کریں</button>
+<button class="no-print" onclick="addItem()">+ نئی Window / Door شامل کریں</button>
 <button class="no-print" onclick="addItem('shower')">+ Shower Cabin</button>
 <button class="no-print" onclick="addItem('glass')">+ 12mm Glass Work</button>
 </div>
@@ -108,291 +115,429 @@ body{background:white;padding:0}
 </div>
 
 <script>
-let count=0;
+let count = 0;
 
-const sections=[
-"DC26F","DC30F","DC26C",
-"M23","M28","M24","D29",
-"M26F","M30F","D54F","D50A","Other"
+const sections = [
+  "DC26F", "DC30F", "DC26C",
+  "M23", "M28", "M24", "D29",
+  "M26F", "M30F", "D54F", "D50A", "Other"
 ];
 
-const gauges=["1.2mm","1.6mm","2mm"];
+const gauges = ["1.2mm", "1.6mm", "2mm"];
 
-function defaultRates(){
-let r={};
-sections.forEach(s=>{
-r[s]={};
-gauges.forEach(g=>r[s][g]=0);
-});
-return r;
-}
-
-let rates=defaultRates();
-
-try{
-let saved=JSON.parse(localStorage.getItem("primeRates"));
-if(saved) rates=Object.assign(defaultRates(),saved);
-}catch(e){}
-
-const money=n=>Number(n||0).toLocaleString("en-PK",{maximumFractionDigits:2});
-
-function val(id){
-return Number(document.getElementById(id).value)||0;
-}
-
-function renderRates(){
-let html="";
-sections.forEach(s=>{
-html+=`
-<div class="rate-row">
-<div class="rate-name">${s}</div>
-${gauges.map(g=>`
-<div>
-<label>${g}</label>
-<input type="number" min="0"
-data-section="${s}" data-gauge="${g}"
-value="${rates[s]?.[g]||0}">
-</div>`).join("")}
-</div>`;
-});
-document.getElementById("rateSettings").innerHTML=html;
-}
-
-function saveRates(){
-document.querySelectorAll("#rateSettings input").forEach(input=>{
-let s=input.dataset.section;
-let g=input.dataset.gauge;
-rates[s][g]=Number(input.value)||0;
-});
-localStorage.setItem("primeRates",JSON.stringify(rates));
-document.querySelectorAll(".item").forEach(el=>updateRate(el));
-calculate();
-alert("Section rates saved successfully!");
-}
-
-function addItem(type="window"){
-count++;
-let d=document.createElement("div");
-d.className="item";
-d.id="item"+count;
-
-let title=type==="shower"?"Shower Cabin":
-type==="glass"?"12mm Glass Work":"Window / Door";
-
-d.innerHTML=`
-<h3>${title} #${count}</h3>
-
-<label>Section Select / پہلے سیکشن منتخب کریں</label>
-<select class="section" onchange="updateRate(this.closest('.item'));calculate()">
-<option value="">Select Section</option>
-${sections.map(s=>`<option value="${s}">${s}</option>`).join("")}
-</select>
-
-<label>Work Type</label>
-<select class="type" onchange="calculate()">
-<option value="window" ${type==="window"?"selected":""}>Window / Door</option>
-<option value="shower" ${type==="shower"?"selected":""}>Shower Cabin</option>
-<option value="glass" ${type==="glass"?"selected":""}>12mm Glass Work</option>
-</select>
-
-<label>Description / تفصیل</label>
-<input class="desc" placeholder="Room or work details">
-
-<div class="grid">
-<div><label>Width (Inches)</label>
-<input class="w" type="number" value="0" oninput="calculate()"></div>
-<div><label>Height (Inches)</label>
-<input class="h" type="number" value="0" oninput="calculate()"></div>
-</div>
-
-<div class="grid">
-<div><label>Quantity</label>
-<input class="qty" type="number" value="1" min="1" oninput="calculate()"></div>
-<div><label>Aluminium Thickness</label>
-<select class="gauge" onchange="updateRate(this.closest('.item'));calculate()">
-<option>1.2mm</option>
-<option>1.6mm</option>
-<option>2mm</option>
-</select></div>
-</div>
-
-<label>Glass Thickness</label>
-<select class="thickness">
-<option>5mm</option><option>6mm</option>
-<option>8mm</option><option>10mm</option>
-<option selected>12mm</option>
-</select>
-
-<label>Aluminium Running Feet (manual)</label>
-<input class="running" type="number" value="0" oninput="calculate()">
-
-<label>Aluminium Rate per Running Foot</label>
-<input class="alrate" type="number" value="0" oninput="calculate()">
-
-<label>Glass Rate per Square Foot</label>
-<input class="grate" type="number" value="0" oninput="calculate()">
-
-<label>Hardware Amount</label>
-<input class="hardware" type="number" value="0" oninput="calculate()">
-
-<label>Labour Amount</label>
-<input class="labour" type="number" value="0" oninput="calculate()">
-
-<p>Glass Area: <b class="area">0</b> sq ft</p>
-<p>Item Total: Rs. <b class="itemtotal">0</b></p>
-
-<button class="danger no-print"
-onclick="this.parentElement.remove();calculate()">Remove Item</button>
-`;
-
-document.getElementById("items").appendChild(d);
-calculate();
-}
-
-function updateRate(el){
-if(!el)return;
-let s=el.querySelector(".section").value;
-let g=el.querySelector(".gauge").value;
-if(s && s!=="Other"){
-el.querySelector(".alrate").value=rates[s]?.[g]||0;
-}
-}
-
-function calculate(){
-let al=0,glass=0,hardware=0,labour=0;
-
-document.querySelectorAll(".item").forEach(el=>{
-let q=Number(el.querySelector(".qty").value)||0;
-let w=Number(el.querySelector(".w").value)||0;
-let h=Number(el.querySelector(".h").value)||0;
-
-let area=(w*h/144)*q;
-let a=(Number(el.querySelector(".running").value)||0)*
-(Number(el.querySelector(".alrate").value)||0);
-
-let g=area*(Number(el.querySelector(".grate").value)||0);
-let hw=Number(el.querySelector(".hardware").value)||0;
-let lb=Number(el.querySelector(".labour").value)||0;
-
-al+=a;
-glass+=g;
-hardware+=hw;
-labour+=lb;
-
-el.querySelector(".area").textContent=money(area);
-el.querySelector(".itemtotal").textContent=money(a+g+hw+lb);
-});
-
-let disc=al*val("discount")/100;
-let cart=val("carriage");
-let subtotal=al-disc+glass+hardware+labour+cart;
-let total=val("finalPrice")>0?val("finalPrice"):subtotal;
-let adv=val("advance");
-
-document.getElementById("alTotal").textContent=money(al);
-document.getElementById("discountTotal").textContent=money(disc);
-document.getElementById("glassTotal").textContent=money(glass);
-document.getElementById("hardwareTotal").textContent=money(hardware);
-document.getElementById("labourTotal").textContent=money(labour);
-document.getElementById("carriageTotal").textContent=money(cart);
-document.getElementById("grand").textContent=money(total);
-document.getElementById("advanceShow").textContent=money(adv);
-document.getElementById("balance").textContent=money(total-adv);
-}
-
-function data(){
-return {
-customer:document.getElementById("customer").value,
-mobile:document.getElementById("mobile").value,
-date:document.getElementById("date").value,
-estimateNo:document.getElementById("estimateNo").value,
-discount:val("discount"),
-carriage:val("carriage"),
-finalPrice:val("finalPrice"),
-advance:val("advance"),
-items:[...document.querySelectorAll(".item")].map(el=>({
-type:el.querySelector(".type").value,
-desc:el.querySelector(".desc").value,
-w:el.querySelector(".w").value,
-h:el.querySelector(".h").value,
-qty:el.querySelector(".qty").value,
-section:el.querySelector(".section").value,
-gauge:el.querySelector(".gauge").value,
-thickness:el.querySelector(".thickness").value,
-running:el.querySelector(".running").value,
-alrate:el.querySelector(".alrate").value,
-grate:el.querySelector(".grate").value,
-hardware:el.querySelector(".hardware").value,
-labour:el.querySelector(".labour").value
-})),
-total:document.getElementById("grand").textContent
+const sampleSectionPrices = {
+  "DC26F": [110, 130, 150],
+  "DC30F": [125, 145, 165],
+  "DC26C": [115, 135, 155],
+  "M23":   [105, 125, 145],
+  "M28":   [130, 150, 170],
+  "M24":   [110, 130, 150],
+  "D29":   [135, 155, 175],
+  "M26F":  [120, 140, 160],
+  "M30F":  [135, 155, 175],
+  "D54F":  [140, 160, 180],
+  "D50A":  [125, 145, 165],
+  "Other": [0, 0, 0]
 };
+
+function defaultRates() {
+  let r = {};
+  sections.forEach(s => {
+    r[s] = {};
+    const prices = sampleSectionPrices[s] || [0, 0, 0];
+    gauges.forEach((g, idx) => {
+      r[s][g] = prices[idx] ?? 0;
+    });
+  });
+  return r;
 }
 
-function saveEstimate(){
-let d=data();
-if(!d.customer){
-alert("Please enter customer name");
-return;
-}
-let all=JSON.parse(localStorage.getItem("primeEstimates")||"[]");
-all.push(d);
-localStorage.setItem("primeEstimates",JSON.stringify(all));
-showSaved();
-alert("Estimate saved successfully");
+let rates = defaultRates();
+
+try {
+  let saved = JSON.parse(localStorage.getItem("primeRates"));
+  if (saved) rates = Object.assign(defaultRates(), saved);
+} catch (e) {}
+
+const money = n => Number(n || 0).toLocaleString("en-PK", { maximumFractionDigits: 2 });
+
+function val(id) {
+  return Number(document.getElementById(id).value) || 0;
 }
 
-function showSaved(){
-let all=JSON.parse(localStorage.getItem("primeEstimates")||"[]");
-let s=document.getElementById("search").value.toLowerCase();
-let filtered=all.filter(x=>(x.customer+" "+x.mobile).toLowerCase().includes(s));
-document.getElementById("saved").innerHTML=filtered.map(x=>
-`<p>${safe(x.customer)} - ${safe(x.mobile)} - Rs. ${safe(x.total)}</p>`
-).join("");
+function calcAutoRunningFeet(itemEl) {
+  const w = Number(itemEl.querySelector(".w").value) || 0;
+  const h = Number(itemEl.querySelector(".h").value) || 0;
+  const q = Number(itemEl.querySelector(".qty").value) || 0;
+  if (w <= 0 || h <= 0 || q <= 0) return 0;
+  const perimeterFeet = (2 * (w + h)) / 12;
+  return Number((perimeterFeet * q).toFixed(2));
 }
 
-function safe(s){
-return String(s??"").replace(/[&<>"']/g,c=>({
-"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-}[c]));
+function syncItemRunningFeet(itemEl, forceAll = false) {
+  if (!itemEl) return;
+  const autoFeet = calcAutoRunningFeet(itemEl);
+  itemEl.querySelectorAll(".sec-row").forEach(row => {
+    const runInput = row.querySelector(".sec-running");
+    if (forceAll || runInput.dataset.manual !== "true") {
+      runInput.value = autoFeet;
+      runInput.dataset.manual = "false";
+    }
+  });
 }
 
-function shareEstimate(){
-let d=data();
-let msg=`Prime Aluminum Phularwan
+function renderRates() {
+  let html = "";
+  sections.forEach(s => {
+    html += `
+      <div class="rate-row">
+        <div class="rate-name">${s}</div>
+        ${gauges.map(g => `
+          <div>
+            <label>${g}</label>
+            <input type="number" min="0"
+              data-section="${s}" data-gauge="${g}"
+              value="${rates[s]?.[g] || 0}">
+          </div>`).join("")}
+      </div>`;
+  });
+  document.getElementById("rateSettings").innerHTML = html;
+}
+
+function saveRates() {
+  document.querySelectorAll("#rateSettings input").forEach(input => {
+    let s = input.dataset.section;
+    let g = input.dataset.gauge;
+    rates[s][g] = Number(input.value) || 0;
+  });
+  localStorage.setItem("primeRates", JSON.stringify(rates));
+  document.querySelectorAll(".sec-row").forEach(row => syncSectionRowRate(row));
+  calculate();
+  alert("Section rates saved successfully!");
+}
+
+function createSectionRow(secData = {}, defaultFeet = 0) {
+  const row = document.createElement("div");
+  row.className = "sec-row";
+  const initialFeet = secData.running !== undefined && secData.running !== null && secData.running !== ""
+    ? secData.running
+    : defaultFeet;
+  const isManual = secData.manual === true;
+
+  row.innerHTML = `
+    <div class="grid">
+      <div>
+        <label>Section / سیکشن</label>
+        <select class="sec-name" onchange="syncSectionRowRate(this.closest('.sec-row'));calculate()">
+          <option value="">Select Section</option>
+          ${sections.map(s => `<option value="${s}" ${secData.section === s ? "selected" : ""}>${s}</option>`).join("")}
+        </select>
+      </div>
+      <div>
+        <label>Thickness</label>
+        <select class="sec-gauge" onchange="syncSectionRowRate(this.closest('.sec-row'));calculate()">
+          ${gauges.map(g => `<option value="${g}" ${secData.gauge === g ? "selected" : ""}>${g}</option>`).join("")}
+        </select>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div>
+        <label>Running Feet (Auto / Editable)</label>
+        <input class="sec-running" type="number" step="any" min="0"
+          data-manual="${isManual ? "true" : "false"}"
+          value="${initialFeet}"
+          oninput="this.dataset.manual='true';calculate()">
+      </div>
+      <div>
+        <label>Rate / Foot (Rs.)</label>
+        <input class="sec-rate" type="number" step="any" min="0" value="${secData.rate ?? 0}" oninput="calculate()">
+      </div>
+    </div>
+
+    <p class="sec-sub">Section Amount: Rs. <span class="sec-total">0</span></p>
+    <button type="button" class="danger small-btn no-print" onclick="removeSectionRow(this)">Remove Section</button>
+  `;
+
+  if (secData.rate === undefined || secData.rate === null || secData.rate === "") {
+    syncSectionRowRate(row);
+  }
+  return row;
+}
+
+function syncSectionRowRate(row) {
+  if (!row) return;
+  const s = row.querySelector(".sec-name").value;
+  const g = row.querySelector(".sec-gauge").value;
+  if (s && s !== "Other") {
+    row.querySelector(".sec-rate").value = rates[s]?.[g] || 0;
+  }
+}
+
+function addSectionToItem(btnOrContainer, secData = {}) {
+  const itemEl = btnOrContainer.closest(".item");
+  const container = btnOrContainer.classList?.contains("sec-list")
+    ? btnOrContainer
+    : btnOrContainer.closest(".sec-box").querySelector(".sec-list");
+  const autoFeet = calcAutoRunningFeet(itemEl);
+  container.appendChild(createSectionRow(secData, autoFeet));
+  calculate();
+}
+
+function removeSectionRow(btn) {
+  const secList = btn.closest(".sec-list");
+  const row = btn.closest(".sec-row");
+  const itemEl = btn.closest(".item");
+  if (secList.children.length > 1) {
+    row.remove();
+  } else {
+    row.querySelector(".sec-name").value = "";
+    row.querySelector(".sec-gauge").value = "1.2mm";
+    row.querySelector(".sec-running").dataset.manual = "false";
+    row.querySelector(".sec-running").value = calcAutoRunningFeet(itemEl);
+    row.querySelector(".sec-rate").value = 0;
+  }
+  calculate();
+}
+
+function addItem(type = "window", itemData = null) {
+  count++;
+  const d = document.createElement("div");
+  d.className = "item";
+  d.id = "item" + count;
+
+  const currentType = itemData?.type || type;
+  const title = currentType === "shower" ? "Shower Cabin" :
+                currentType === "glass" ? "12mm Glass Work" : "Window / Door";
+
+  d.innerHTML = `
+    <h3>${title} #${count}</h3>
+
+    <label>Work Type</label>
+    <select class="type" onchange="calculate()">
+      <option value="window" ${currentType === "window" ? "selected" : ""}>Window / Door</option>
+      <option value="shower" ${currentType === "shower" ? "selected" : ""}>Shower Cabin</option>
+      <option value="glass" ${currentType === "glass" ? "selected" : ""}>12mm Glass Work</option>
+    </select>
+
+    <label>Description / تفصیل</label>
+    <input class="desc" placeholder="Room or work details" value="${safe(itemData?.desc || "")}">
+
+    <div class="grid">
+      <div><label>Width (Inches)</label>
+      <input class="w" type="number" step="any" value="${itemData?.w ?? 0}" oninput="syncItemRunningFeet(this.closest('.item'), true);calculate()"></div>
+      <div><label>Height (Inches)</label>
+      <input class="h" type="number" step="any" value="${itemData?.h ?? 0}" oninput="syncItemRunningFeet(this.closest('.item'), true);calculate()"></div>
+    </div>
+
+    <div class="grid">
+      <div><label>Quantity</label>
+      <input class="qty" type="number" value="${itemData?.qty ?? 1}" min="1" oninput="syncItemRunningFeet(this.closest('.item'), true);calculate()"></div>
+      <div><label>Glass Thickness</label>
+      <select class="thickness">
+        ${["5mm","6mm","8mm","10mm","12mm"].map(t => `<option ${itemData?.thickness === t || (!itemData?.thickness && t === "12mm") ? "selected" : ""}>${t}</option>`).join("")}
+      </select></div>
+    </div>
+
+    <div class="sec-box">
+      <label><b>Sections Used / استعمال ہونے والے سیکشنز</b></label>
+      <div class="sec-list"></div>
+      <button type="button" class="small-btn no-print" onclick="addSectionToItem(this)">+ Add Section / سیکشن شامل کریں</button>
+    </div>
+
+    <label>Glass Rate per Square Foot</label>
+    <input class="grate" type="number" step="any" value="${itemData?.grate ?? 0}" oninput="calculate()">
+
+    <label>Hardware Amount</label>
+    <input class="hardware" type="number" step="any" value="${itemData?.hardware ?? 0}" oninput="calculate()">
+
+    <label>Labour Amount</label>
+    <input class="labour" type="number" step="any" value="${itemData?.labour ?? 0}" oninput="calculate()">
+
+    <p>Auto Running Feet: <b class="autofeet">0</b> ft</p>
+    <p>Glass Area: <b class="area">0</b> sq ft</p>
+    <p>Sections Total: Rs. <b class="sectotal">0</b></p>
+    <p>Item Total: Rs. <b class="itemtotal">0</b></p>
+
+    <button type="button" class="danger no-print"
+      onclick="this.parentElement.remove();calculate()">Remove Item</button>
+  `;
+
+  document.getElementById("items").appendChild(d);
+
+  const secList = d.querySelector(".sec-list");
+  if (Array.isArray(itemData?.sections) && itemData.sections.length > 0) {
+    itemData.sections.forEach(s => addSectionToItem(secList, s));
+  } else {
+    addSectionToItem(secList, {
+      section: itemData?.section || "",
+      gauge: itemData?.gauge || "1.2mm",
+      running: itemData?.running,
+      rate: itemData?.alrate
+    });
+  }
+
+  calculate();
+}
+
+function calculate() {
+  let al = 0, glass = 0, hardware = 0, labour = 0;
+
+  document.querySelectorAll(".item").forEach(el => {
+    let q = Number(el.querySelector(".qty").value) || 0;
+    let w = Number(el.querySelector(".w").value) || 0;
+    let h = Number(el.querySelector(".h").value) || 0;
+
+    let autoFeet = calcAutoRunningFeet(el);
+    let area = (w * h / 144) * q;
+
+    let itemAl = 0;
+    el.querySelectorAll(".sec-row").forEach(row => {
+      let run = Number(row.querySelector(".sec-running").value) || 0;
+      let rate = Number(row.querySelector(".sec-rate").value) || 0;
+      let secAmt = run * rate;
+      row.querySelector(".sec-total").textContent = money(secAmt);
+      itemAl += secAmt;
+    });
+
+    let g = area * (Number(el.querySelector(".grate").value) || 0);
+    let hw = Number(el.querySelector(".hardware").value) || 0;
+    let lb = Number(el.querySelector(".labour").value) || 0;
+
+    al += itemAl;
+    glass += g;
+    hardware += hw;
+    labour += lb;
+
+    el.querySelector(".autofeet").textContent = money(autoFeet);
+    el.querySelector(".area").textContent = money(area);
+    el.querySelector(".sectotal").textContent = money(itemAl);
+    el.querySelector(".itemtotal").textContent = money(itemAl + g + hw + lb);
+  });
+
+  let disc = al * val("discount") / 100;
+  let cart = val("carriage");
+  let subtotal = al - disc + glass + hardware + labour + cart;
+  let total = val("finalPrice") > 0 ? val("finalPrice") : subtotal;
+  let adv = val("advance");
+
+  document.getElementById("alTotal").textContent = money(al);
+  document.getElementById("discountTotal").textContent = money(disc);
+  document.getElementById("glassTotal").textContent = money(glass);
+  document.getElementById("hardwareTotal").textContent = money(hardware);
+  document.getElementById("labourTotal").textContent = money(labour);
+  document.getElementById("carriageTotal").textContent = money(cart);
+  document.getElementById("grand").textContent = money(total);
+  document.getElementById("advanceShow").textContent = money(adv);
+  document.getElementById("balance").textContent = money(total - adv);
+}
+
+function data() {
+  return {
+    customer: document.getElementById("customer").value,
+    mobile: document.getElementById("mobile").value,
+    date: document.getElementById("date").value,
+    estimateNo: document.getElementById("estimateNo").value,
+    discount: val("discount"),
+    carriage: val("carriage"),
+    finalPrice: val("finalPrice"),
+    advance: val("advance"),
+    items: [...document.querySelectorAll(".item")].map(el => ({
+      type: el.querySelector(".type").value,
+      desc: el.querySelector(".desc").value,
+      w: el.querySelector(".w").value,
+      h: el.querySelector(".h").value,
+      qty: el.querySelector(".qty").value,
+      thickness: el.querySelector(".thickness").value,
+      sections: [...el.querySelectorAll(".sec-row")].map(row => ({
+        section: row.querySelector(".sec-name").value,
+        gauge: row.querySelector(".sec-gauge").value,
+        running: row.querySelector(".sec-running").value,
+        manual: row.querySelector(".sec-running").dataset.manual === "true",
+        rate: row.querySelector(".sec-rate").value
+      })),
+      grate: el.querySelector(".grate").value,
+      hardware: el.querySelector(".hardware").value,
+      labour: el.querySelector(".labour").value
+    })),
+    total: document.getElementById("grand").textContent
+  };
+}
+
+function saveEstimate() {
+  let d = data();
+  if (!d.customer) {
+    alert("Please enter customer name");
+    return;
+  }
+  let all = JSON.parse(localStorage.getItem("primeEstimates") || "[]");
+  all.push(d);
+  localStorage.setItem("primeEstimates", JSON.stringify(all));
+  showSaved();
+  alert("Estimate saved successfully");
+}
+
+function showSaved() {
+  let all = JSON.parse(localStorage.getItem("primeEstimates") || "[]");
+  let s = document.getElementById("search").value.toLowerCase();
+  let filtered = all.filter(x => (x.customer + " " + x.mobile).toLowerCase().includes(s));
+  document.getElementById("saved").innerHTML = filtered.map(x =>
+    `<p>${safe(x.customer)} - ${safe(x.mobile)} - Rs. ${safe(x.total)}</p>`
+  ).join("");
+}
+
+function safe(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
+}
+
+function shareEstimate() {
+  let d = data();
+  let msg = `Prime Aluminum Phularwan
 Customer: ${d.customer}
 Mobile: ${d.mobile}
 Date: ${d.date}
 Total: Rs. ${d.total}
 Advance: Rs. ${d.advance}
-Balance: Rs. ${money(Number(d.total.replace(/,/g,""))-d.advance)}`;
+Balance: Rs. ${money(Number(d.total.replace(/,/g, "")) - d.advance)}`;
 
-if(navigator.share){
-navigator.share({title:"Estimate",text:msg}).catch(()=>{});
-}else if(navigator.clipboard){
-navigator.clipboard.writeText(msg).then(()=>alert("Estimate copied"));
-}else{
-alert(msg);
-}
-}
-
-function newEstimate(){
-if(!confirm("Start a new estimate? Save current estimate first."))return;
-document.getElementById("customer").value="";
-document.getElementById("mobile").value="";
-document.getElementById("estimateNo").value="";
-document.getElementById("items").innerHTML="";
-document.getElementById("discount").value=0;
-document.getElementById("carriage").value=0;
-document.getElementById("finalPrice").value="";
-document.getElementById("advance").value=0;
-addItem();
+  if (navigator.share) {
+    navigator.share({ title: "Estimate", text: msg }).catch(() => {});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(msg).then(() => alert("Estimate copied"));
+  } else {
+    alert(msg);
+  }
 }
 
-document.getElementById("date").value=new Date().toISOString().slice(0,10);
+function newEstimate() {
+  if (!confirm("Start a new estimate? Save current estimate first.")) return;
+  document.getElementById("customer").value = "";
+  document.getElementById("mobile").value = "";
+  document.getElementById("estimateNo").value = "";
+  document.getElementById("items").innerHTML = "";
+  document.getElementById("discount").value = 0;
+  document.getElementById("carriage").value = 0;
+  document.getElementById("finalPrice").value = "";
+  document.getElementById("advance").value = 0;
+  addItem();
+}
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/G-Estimate-calculator/sw.js", {
+        scope: "/G-Estimate-calculator/"
+      })
+      .catch(err => console.error("Service Worker registration failed:", err));
+  });
+}
+
+document.getElementById("date").value = new Date().toISOString().slice(0, 10);
 renderRates();
 addItem();
 showSaved();
 </script>
 </body>
-</html>
+  </html>
