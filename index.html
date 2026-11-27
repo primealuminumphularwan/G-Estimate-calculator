@@ -3,397 +3,456 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aluminium Window & Door Estimate Calculator</title>
+  <title>Aluminium Window & Door Estimate App</title>
   <style>
-    :root {
-      --bg: #f3f5f8;
-      --card: #ffffff;
-      --primary: #154c79;
-      --primary-dark: #0e3556;
-      --accent: #0f766e;
-      --text: #1e293b;
-      --muted: #64748b;
-      --border: #cbd5e1;
-      --chip-bg: #eef2f6;
-      --chip-active: #154c79;
-      --danger: #b91c1c;
-    }
     * { box-sizing: border-box; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
-    body { margin: 0; background: var(--bg); color: var(--text); padding: 14px; }
-    .container { max-width: 980px; margin: 0 auto; }
-    .header { background: var(--primary); color: #fff; padding: 16px 20px; border-radius: 12px; margin-bottom: 14px; }
-    .header h1 { margin: 0 0 4px; font-size: 20px; }
-    .header p { margin: 0; font-size: 13px; opacity: 0.9; }
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 14px; }
-    .card h2 { margin: 0 0 12px; font-size: 16px; color: var(--primary-dark); border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
-    label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 4px; }
-    input, select { width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; background: #fff; }
-    input:focus, select:focus { outline: none; border-color: var(--primary); }
-    .hidden { display: none !important; }
-    .single-line-ticks { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 8px; padding-bottom: 8px; }
-    .tick-btn { flex: 0 0 auto; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--chip-bg); color: var(--text); font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
-    .tick-btn.active { background: var(--chip-active); color: #fff; border-color: var(--chip-active); }
-    .btn { padding: 10px 16px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
-    .btn-secondary { background: #e2e8f0; color: var(--text); }
-    .btn-accent { background: var(--accent); color: #fff; }
-    .btn-grand { background: var(--primary); color: #fff; width: 100%; padding: 13px; font-size: 16px; }
-    .btn-grand:hover { background: var(--primary-dark); }
-    .btn-del { background: #fee2e2; color: var(--danger); padding: 6px 10px; font-size: 12px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; }
-    th, td { border: 1px solid #e2e8f0; padding: 8px; text-align: left; }
-    th { background: #f8fafc; color: var(--primary-dark); }
-    .right { text-align: right; }
-    .custom-row { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 8px; margin-bottom: 8px; align-items: end; }
-    @media (max-width: 640px) { .custom-row { grid-template-columns: 1fr 1fr; } }
-    .grand-box { background: #f0fdfa; border: 2px solid var(--accent); border-radius: 12px; padding: 16px; margin-top: 14px; }
-    .grand-total-line { font-size: 20px; font-weight: 800; color: var(--primary-dark); margin-top: 10px; padding-top: 10px; border-top: 1px solid #99f6e4; }
-    textarea { width: 100%; min-height: 150px; margin-top: 10px; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; }
-    .note { font-size: 12px; color: var(--muted); margin-top: 6px; }
+    body { margin: 0; background: #f1f5f9; color: #0f172a; padding: 12px; }
+    .wrap { max-width: 960px; margin: 0 auto; }
+    .top { background: #1e3a8a; color: #fff; padding: 14px 18px; border-radius: 10px; margin-bottom: 12px; }
+    .top h1 { margin: 0; font-size: 19px; }
+    .top p { margin: 4px 0 0; font-size: 12px; opacity: 0.9; }
+    .box { background: #fff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 14px; margin-bottom: 12px; }
+    .box h2 { margin: 0 0 10px; font-size: 15px; color: #1e3a8a; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
+    .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+    label { display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 4px; }
+    input, select { width: 100%; padding: 8px; border: 1px solid #94a3b8; border-radius: 6px; font-size: 14px; background: #fff; }
+    .hidden { display: none; }
+
+    .sec-line {
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      gap: 8px;
+      padding: 6px 2px 10px;
+      border-bottom: 1px dashed #cbd5e1;
+      margin-bottom: 10px;
+    }
+    .sec-chip {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #e2e8f0;
+      color: #0f172a;
+      padding: 7px 11px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+    }
+    .sec-chip input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+      transform: scale(1.15);
+      cursor: pointer;
+    }
+    .sec-chip.checked {
+      background: #1e3a8a;
+      color: #fff;
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 6px; }
+    th, td { border: 1px solid #cbd5e1; padding: 7px; text-align: left; }
+    th { background: #f8fafc; }
+    .r { text-align: right; }
+    .btn { padding: 9px 14px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 14px; }
+    .btn-add { background: #e2e8f0; color: #0f172a; }
+    .btn-save { background: #1d4ed8; color: #fff; }
+    .btn-del { background: #fee2e2; color: #b91c1c; padding: 6px 10px; }
+    .btn-grand { background: #0f766e; color: #fff; width: 100%; padding: 12px; font-size: 16px; }
+    .custom-grid { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 8px; margin-bottom: 8px; align-items: end; }
+    @media (max-width: 600px) { .custom-grid { grid-template-columns: 1fr 1fr; } }
+    .total-box { background: #f0fdfa; border: 2px solid #0f766e; border-radius: 10px; padding: 14px; margin-top: 12px; }
+    .grand-num { font-size: 20px; font-weight: 800; color: #1e3a8a; margin-top: 8px; padding-top: 8px; border-top: 1px solid #99f6e4; }
+    textarea { width: 100%; min-height: 155px; margin-top: 10px; padding: 8px; border-radius: 6px; border: 1px solid #94a3b8; font-size: 13px; }
+    .hint { font-size: 12px; color: #64748b; margin-top: 4px; }
+    .saved-msg { font-size: 12px; font-weight: 700; color: #0f766e; margin-left: 8px; }
   </style>
 </head>
 <body>
-<div class="container">
-  <div class="header">
-    <h1>Aluminium Window & Door Estimate App</h1>
-    <p>Exact Running Feet (Baghair 16-ft Length Rule) • +2.5" F-Section Rule • Live Section Rate & Grand Total</p>
+<div class="wrap">
+  <div class="top">
+    <h1>Window & Door Estimate Calculator</h1>
+    <p>Exact Running Feet (Baghair 16-ft Length) • F-Section +2.5" Rule • Customer, Date & % Adjustment</p>
   </div>
 
-  <div class="card">
-    <h2>1. Item Type & Size (Inches)</h2>
-    <div class="grid">
+  <div class="box">
+    <h2>1. Customer Details, Date & Size (Inches)</h2>
+    <div class="row" style="margin-bottom:10px;">
       <div>
-        <label>Item Type</label>
-        <select id="itemType" onchange="onItemTypeChange()">
-          <option value="window">Window (Sliding + Jali)</option>
+        <label>Customer Name</label>
+        <input type="text" id="custName" placeholder="Gahak ka naam likhein" oninput="calcAll()" />
+      </div>
+      <div>
+        <label>Date</label>
+        <input type="date" id="estDate" onchange="calcAll()" />
+      </div>
+      <div>
+        <label>Type</label>
+        <select id="typeSel" onchange="switchType()">
+          <option value="window">Window</option>
           <option value="door">Door Set</option>
         </select>
       </div>
+    </div>
+
+    <div class="row">
       <div>
         <label>Width (Inches)</label>
-        <input type="number" id="widthIn" value="48" min="1" step="0.1" oninput="renderAll()" />
+        <input type="number" id="wIn" value="48" min="1" step="0.1" oninput="calcAll()" />
       </div>
       <div>
         <label>Height (Inches)</label>
-        <input type="number" id="heightIn" value="60" min="1" step="0.1" oninput="renderAll()" />
+        <input type="number" id="hIn" value="60" min="1" step="0.1" oninput="calcAll()" />
       </div>
       <div>
-        <label>Tadad / Quantity (Units)</label>
-        <input type="number" id="qty" value="1" min="1" step="1" oninput="renderAll()" />
+        <label>Tadad (Units)</label>
+        <input type="number" id="qtyIn" value="1" min="1" step="1" oninput="calcAll()" />
       </div>
     </div>
 
-    <div id="doorOptions" class="grid hidden" style="margin-top: 12px;">
+    <div id="doorBox" class="row hidden" style="margin-top:10px;">
       <div>
-        <label>Door Chokhat Section</label>
-        <select id="doorChokhat" onchange="renderAll()">
-          <option value="D42F">D42F (+2.5" each)</option>
-          <option value="D54F">D54F (+2.5" each)</option>
-          <option value="D51F">D51F (+2.5" each)</option>
-          <option value="D42">D42 (Exact)</option>
-          <option value="D51">D51 (Exact)</option>
-          <option value="D54">D54 (Exact)</option>
+        <label>Chokhat Section</label>
+        <select id="chokhatSel" onchange="syncDoorTicks()">
+          <option value="D42F">D42F (+2.5")</option>
+          <option value="D54F">D54F (+2.5")</option>
+          <option value="D51F">D51F (+2.5")</option>
+          <option value="D42">D42</option>
+          <option value="D51">D51</option>
+          <option value="D54">D54</option>
         </select>
       </div>
       <div>
-        <label>Door Palla Section</label>
-        <select id="doorPalla" onchange="renderAll()">
+        <label>Palla Section</label>
+        <select id="pallaSel" onchange="syncDoorTicks()">
           <option value="D50A">D50A</option>
           <option value="D50B">D50B</option>
           <option value="D50">D50</option>
         </select>
       </div>
       <div>
-        <label>D52 Divider Pieces (Per Door)</label>
-        <input type="number" id="d52Count" value="1" min="0" step="1" oninput="renderAll()" />
+        <label>D52 Divider Pieces</label>
+        <input type="number" id="d52Qty" value="1" min="0" step="1" oninput="calcAll()" />
       </div>
     </div>
   </div>
 
-  <div class="card">
-    <h2>2. Sections Tick Karein (Ek Hi Line Mein)</h2>
-    <div id="tickBar" class="single-line-ticks"></div>
-    <div class="note">Jo section tick hoga, uski Running Feet aur Total Amount neeche table mein saath nazar aayega. Rate (Rs / R.Ft) aap khud badal sakte hain.</div>
+  <div class="box">
+    <h2>2. Sections Select Karein (Ek Hi Line Mein)</h2>
+    <div class="sec-line" id="tickRow">
+      <label class="sec-chip checked"><input type="checkbox" value="DC26F" checked onchange="calcAll()">DC26F</label>
+      <label class="sec-chip checked"><input type="checkbox" value="DC30F" checked onchange="calcAll()">DC30F</label>
+      <label class="sec-chip checked"><input type="checkbox" value="M23" checked onchange="calcAll()">M23</label>
+      <label class="sec-chip checked"><input type="checkbox" value="M28" checked onchange="calcAll()">M28</label>
+      <label class="sec-chip checked"><input type="checkbox" value="M24" checked onchange="calcAll()">M24</label>
+      <label class="sec-chip checked"><input type="checkbox" value="D29" checked onchange="calcAll()">D29</label>
+      <label class="sec-chip"><input type="checkbox" value="D42F" onchange="calcAll()">D42F</label>
+      <label class="sec-chip"><input type="checkbox" value="D54F" onchange="calcAll()">D54F</label>
+      <label class="sec-chip"><input type="checkbox" value="D51F" onchange="calcAll()">D51F</label>
+      <label class="sec-chip"><input type="checkbox" value="D42" onchange="calcAll()">D42</label>
+      <label class="sec-chip"><input type="checkbox" value="D51" onchange="calcAll()">D51</label>
+      <label class="sec-chip"><input type="checkbox" value="D54" onchange="calcAll()">D54</label>
+      <label class="sec-chip"><input type="checkbox" value="D50A" onchange="calcAll()">D50A</label>
+      <label class="sec-chip"><input type="checkbox" value="D50B" onchange="calcAll()">D50B</label>
+      <label class="sec-chip"><input type="checkbox" value="D50" onchange="calcAll()">D50</label>
+      <label class="sec-chip"><input type="checkbox" value="D46" onchange="calcAll()">D46</label>
+      <label class="sec-chip"><input type="checkbox" value="D52" onchange="calcAll()">D52</label>
+    </div>
+    <div class="hint">Agar aage mazeed sections hain to side mein scroll karein. Jo tick hoga uski R.Ft aur Rate saath nazar aayega.</div>
 
-    <div style="overflow-x: auto;">
+    <div style="overflow-x:auto;">
       <table>
         <thead>
           <tr>
             <th>Section</th>
-            <th>Formula (Inches)</th>
-            <th class="right">Total R.Ft</th>
-            <th class="right">Rate / R.Ft</th>
-            <th class="right">Total Amount</th>
+            <th>Formula</th>
+            <th class="r">Total R.Ft</th>
+            <th class="r">Rate / Ft</th>
+            <th class="r">Total Rs</th>
           </tr>
         </thead>
-        <tbody id="activeSectionsBody"></tbody>
+        <tbody id="secTableBody"></tbody>
       </table>
     </div>
   </div>
 
-  <div class="card">
-    <h2>3. Khud Section Muntakhib Karein (Custom Selection)</h2>
-    <div id="customRows"></div>
-    <button type="button" class="btn btn-secondary" onclick="addCustomRow()">+ Khud Section Chunein</button>
+  <div class="box">
+    <h2>3. Khud Section Muntakhib Karein</h2>
+    <div id="customList"></div>
+    <button type="button" class="btn btn-add" onclick="addCustom()">+ Khud Section Chunein</button>
   </div>
 
-  <div class="card">
-    <h2>4. Georgian Bar, Hardware, Glass & Labour</h2>
-    <div class="grid">
+  <div class="box">
+    <h2>4. Georgian Bar, Hardware, Glass, Labour & %</h2>
+    <div class="row">
       <div>
-        <label>Georgian Bar Area (Sq.Ft)</label>
-        <input type="number" id="georgianSqft" value="0" min="0" step="0.1" oninput="renderAll()" />
+        <label>Georgian Bar (Sq.Ft)</label>
+        <input type="number" id="gbSqft" value="0" min="0" step="0.1" oninput="calcAll()" />
       </div>
       <div>
-        <label>Georgian Bar Rate (Rs / Sq.Ft)</label>
-        <input type="number" id="georgianRate" value="0" min="0" step="1" oninput="renderAll()" />
+        <label>Georgian Rate (Rs / Sq.Ft)</label>
+        <input type="number" id="gbRate" value="0" min="0" step="1" oninput="calcAll()" />
       </div>
       <div>
-        <label>Hardware (1 Unit ki Rakam Rs)</label>
-        <input type="number" id="hardwarePerUnit" value="0" min="0" step="1" oninput="renderAll()" />
+        <label>Hardware (1 Unit Rs)</label>
+        <input type="number" id="hwUnit" value="0" min="0" step="1" oninput="calcAll()" />
       </div>
       <div>
         <label>Glass Rate (Rs / Sq.Ft)</label>
-        <input type="number" id="glassRate" value="0" min="0" step="1" oninput="renderAll()" />
+        <input type="number" id="glRate" value="0" min="0" step="1" oninput="calcAll()" />
       </div>
       <div>
-        <label>Labour & Fitting Rate (Rs / Sq.Ft)</label>
-        <input type="number" id="labourRate" value="0" min="0" step="1" oninput="renderAll()" />
+        <label>Labour Rate (Rs / Sq.Ft)</label>
+        <input type="number" id="lbRate" value="0" min="0" step="1" oninput="calcAll()" />
+      </div>
+      <div>
+        <label>Adjustment (%)</label>
+        <input type="number" id="pctAdj" value="0" step="0.5" placeholder="e.g. -5 ya +10" oninput="calcAll()" />
       </div>
     </div>
-    <div class="note" id="areaInfo"></div>
+    <div class="hint">Discount ke liye minus mein likhein (jaise <strong>-5</strong>) aur izafay/profit/tax ke liye plus mein (jaise <strong>10</strong>).</div>
+    <div class="hint" id="sqftText"></div>
+    <div style="margin-top:10px;">
+      <button type="button" class="btn btn-save" onclick="saveRates()">Save My Rates</button>
+      <span id="saveStatus" class="saved-msg"></span>
+    </div>
   </div>
 
-  <div class="card">
-    <button type="button" class="btn btn-grand" onclick="showGrandTotal()">Grand Total Hisab Dekhein</button>
-    <div id="grandResult" class="grand-box hidden"></div>
+  <div class="box">
+    <button type="button" class="btn btn-grand" onclick="showGrand()">Grand Total</button>
+    <div id="grandBox" class="total-box hidden"></div>
   </div>
 </div>
 
 <script>
-  const ALL_SECTIONS = ["DC26F", "DC30F", "M23", "M28", "M24", "D29", "D42F", "D54F", "D51F", "D42", "D51", "D54", "D50A", "D50B", "D50", "D46", "D52"];
-  const rates = {};
-  ALL_SECTIONS.forEach(s => rates[s] = 0);
+  const ALL = ["DC26F","DC30F","M23","M28","M24","D29","D42F","D54F","D51F","D42","D51","D54","D50A","D50B","D50","D46","D52"];
+  const STORAGE_KEY = "alu_estimate_saved_rates_v1";
+  const rateMap = {};
+  ALL.forEach(s => rateMap[s] = 0);
+  let customRows = [];
 
-  let selectedTicks = new Set(["DC26F", "DC30F", "M23", "M28", "M24", "D29"]);
-  let customSelections = [];
+  (function setDefaultDate() {
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    document.getElementById('estDate').value = `${yyyy}-${mm}-${dd}`;
+  })();
 
-  function getNum(id) {
+  function loadSavedRates() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw);
+      if (saved.rates) {
+        ALL.forEach(s => {
+          if (typeof saved.rates[s] === "number") rateMap[s] = saved.rates[s];
+        });
+      }
+      if (typeof saved.gbRate === "number") document.getElementById('gbRate').value = saved.gbRate;
+      if (typeof saved.hwUnit === "number") document.getElementById('hwUnit').value = saved.hwUnit;
+      if (typeof saved.glRate === "number") document.getElementById('glRate').value = saved.glRate;
+      if (typeof saved.lbRate === "number") document.getElementById('lbRate').value = saved.lbRate;
+      if (typeof saved.pctAdj === "number") document.getElementById('pctAdj').value = saved.pctAdj;
+    } catch (e) {}
+  }
+
+  function saveRates() {
+    const payload = {
+      rates: rateMap,
+      gbRate: num('gbRate'),
+      hwUnit: num('hwUnit'),
+      glRate: num('glRate'),
+      lbRate: num('lbRate'),
+      pctAdj: num('pctAdj')
+    };
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      document.getElementById('saveStatus').textContent = "✓ Rates save ho gaye hain";
+      setTimeout(() => { document.getElementById('saveStatus').textContent = ""; }, 2500);
+    } catch (e) {
+      document.getElementById('saveStatus').textContent = "Save nahi ho saka";
+    }
+  }
+
+  function num(id) {
     const v = parseFloat(document.getElementById(id).value);
     return isNaN(v) ? 0 : v;
   }
 
-  function calcSectionInches(code, W, H, d52Count) {
-    switch (code) {
-      case "DC26F": return { formula: `W+2.5" (${(W + 2.5).toFixed(1)}")`, inches: W + 2.5 };
-      case "DC30F": return { formula: `(W+2.5")+2(H+2.5")`, inches: (W + 2.5) + 2 * (H + 2.5) };
-      case "M23": return { formula: `2×H (${(2 * H).toFixed(1)}")`, inches: 2 * H };
-      case "M28": return { formula: `2×H (${(2 * H).toFixed(1)}")`, inches: 2 * H };
-      case "M24": return { formula: `2×W (${(2 * W).toFixed(1)}")`, inches: 2 * W };
-      case "D29": return { formula: `2×H + W (${(2 * H + W).toFixed(1)}")`, inches: 2 * H + W };
+  function setTicks(list) {
+    const set = new Set(list);
+    document.querySelectorAll('#tickRow input[type="checkbox"]').forEach(cb => {
+      cb.checked = set.has(cb.value);
+      cb.parentElement.classList.toggle('checked', cb.checked);
+    });
+  }
 
+  function switchType() {
+    const t = document.getElementById('typeSel').value;
+    document.getElementById('doorBox').classList.toggle('hidden', t !== 'door');
+    if (t === 'window') {
+      setTicks(["DC26F","DC30F","M23","M28","M24","D29"]);
+    } else {
+      syncDoorTicks(false);
+    }
+    calcAll();
+  }
+
+  function syncDoorTicks(recalc = true) {
+    const c = document.getElementById('chokhatSel').value;
+    const p = document.getElementById('pallaSel').value;
+    setTicks([c, p, "D46", "D52"]);
+    if (recalc) calcAll();
+  }
+
+  function secInches(code, w, h, d52) {
+    switch (code) {
+      case "DC26F": return { f: `W+2.5"`, in: w + 2.5 };
+      case "DC30F": return { f: `(W+2.5")+2(H+2.5")`, in: (w + 2.5) + 2 * (h + 2.5) };
+      case "M23": return { f: `2×H`, in: 2 * h };
+      case "M28": return { f: `2×H`, in: 2 * h };
+      case "M24": return { f: `2×W`, in: 2 * w };
+      case "D29": return { f: `2×H + W`, in: 2 * h + w };
       case "D42F":
       case "D54F":
-      case "D51F": return { formula: `(W+2.5")+2(H+2.5")`, inches: (W + 2.5) + 2 * (H + 2.5) };
+      case "D51F": return { f: `(W+2.5")+2(H+2.5")`, in: (w + 2.5) + 2 * (h + 2.5) };
       case "D42":
       case "D51":
-      case "D54": return { formula: `W + 2×H`, inches: W + 2 * H };
-
+      case "D54": return { f: `W + 2×H`, in: w + 2 * h };
       case "D50A":
       case "D50B":
-      case "D50": return { formula: `W + 2×H`, inches: W + 2 * H };
-      case "D46": return { formula: `1×W (${W.toFixed(1)}")`, inches: W };
-      case "D52": return { formula: `${d52Count}×W`, inches: d52Count * W };
-      default: return { formula: `1×W`, inches: W };
+      case "D50": return { f: `W + 2×H`, in: w + 2 * h };
+      case "D46": return { f: `1×W`, in: w };
+      case "D52": return { f: `${d52}×W`, in: d52 * w };
+      default: return { f: `1×W`, in: w };
     }
   }
 
-  function onItemTypeChange() {
-    const type = document.getElementById("itemType").value;
-    document.getElementById("doorOptions").classList.toggle("hidden", type !== "door");
-    if (type === "window") {
-      selectedTicks = new Set(["DC26F", "DC30F", "M23", "M28", "M24", "D29"]);
-    } else {
-      const chokhat = document.getElementById("doorChokhat").value;
-      const palla = document.getElementById("doorPalla").value;
-      selectedTicks = new Set([chokhat, palla, "D46", "D52"]);
-    }
-    renderAll();
+  function addCustom() {
+    customRows.push({ code: "DC26F", feet: 0, rate: 0 });
+    renderCustom();
+    calcAll();
   }
 
-  function toggleTick(code) {
-    if (selectedTicks.has(code)) selectedTicks.delete(code);
-    else selectedTicks.add(code);
-    renderAll();
+  function delCustom(i) {
+    customRows.splice(i, 1);
+    renderCustom();
+    calcAll();
   }
 
-  function renderTickBar() {
-    const bar = document.getElementById("tickBar");
-    bar.innerHTML = "";
-    ALL_SECTIONS.forEach(code => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "tick-btn" + (selectedTicks.has(code) ? " active" : "");
-      btn.textContent = (selectedTicks.has(code) ? "✓ " : "") + code;
-      btn.onclick = () => toggleTick(code);
-      bar.appendChild(btn);
-    });
-  }
-
-  function renderActiveTable() {
-    const W = getNum("widthIn");
-    const H = getNum("heightIn");
-    const qty = Math.max(1, getNum("qty"));
-    const d52Count = Math.max(0, getNum("d52Count"));
-    const tbody = document.getElementById("activeSectionsBody");
-    tbody.innerHTML = "";
-
-    let sectionsTotal = 0;
-
-    Array.from(selectedTicks).forEach(code => {
-      const info = calcSectionInches(code, W, H, d52Count);
-      const rft = (info.inches * qty) / 12;
-      const rate = rates[code] || 0;
-      const amount = rft * rate;
-      sectionsTotal += amount;
-
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td><strong>${code}</strong></td>
-        <td>${info.formula} × ${qty}</td>
-        <td class="right">${rft.toFixed(2)} ft</td>
-        <td class="right" style="width:120px;">
-          <input type="number" min="0" step="1" value="${rate}" oninput="updateRate('${code}', this.value)" />
-        </td>
-        <td class="right"><strong>Rs ${amount.toFixed(0)}</strong></td>
-      `;
-      tbody.appendChild(tr);
-    });
-
-    return sectionsTotal;
-  }
-
-  function updateRate(code, val) {
-    rates[code] = parseFloat(val) || 0;
-    renderAll(false);
-  }
-
-  function addCustomRow() {
-    customSelections.push({ code: "DC26F", feet: 0, rate: 0 });
-    renderCustomRows();
-  }
-
-  function removeCustomRow(idx) {
-    customSelections.splice(idx, 1);
-    renderCustomRows();
-    renderAll(false);
-  }
-
-  function renderCustomRows() {
-    const wrap = document.getElementById("customRows");
-    wrap.innerHTML = "";
-    customSelections.forEach((row, i) => {
-      const div = document.createElement("div");
-      div.className = "custom-row";
-      const opts = ALL_SECTIONS.map(s => `<option value="${s}" ${row.code === s ? "selected" : ""}>${s}</option>`).join("");
+  function renderCustom() {
+    const wrap = document.getElementById('customList');
+    wrap.innerHTML = '';
+    customRows.forEach((r, i) => {
+      const opts = ALL.map(s => `<option value="${s}" ${r.code===s?'selected':''}>${s}</option>`).join('');
+      const div = document.createElement('div');
+      div.className = 'custom-grid';
       div.innerHTML = `
-        <div>
-          <label>Section</label>
-          <select onchange="customSelections[${i}].code=this.value; renderAll(false);">${opts}</select>
-        </div>
-        <div>
-          <label>Running Feet</label>
-          <input type="number" min="0" step="0.1" value="${row.feet}" oninput="customSelections[${i}].feet=parseFloat(this.value)||0; renderAll(false);" />
-        </div>
-        <div>
-          <label>Rate (Rs/Ft)</label>
-          <input type="number" min="0" step="1" value="${row.rate}" oninput="customSelections[${i}].rate=parseFloat(this.value)||0; renderAll(false);" />
-        </div>
-        <div>
-          <button type="button" class="btn btn-del" onclick="removeCustomRow(${i})">✕</button>
-        </div>
+        <div><label>Section</label><select onchange="customRows[${i}].code=this.value;calcAll();">${opts}</select></div>
+        <div><label>Running Feet</label><input type="number" min="0" step="0.1" value="${r.feet}" oninput="customRows[${i}].feet=parseFloat(this.value)||0;calcAll();" /></div>
+        <div><label>Rate / Ft</label><input type="number" min="0" step="1" value="${r.rate}" oninput="customRows[${i}].rate=parseFloat(this.value)||0;calcAll();" /></div>
+        <div><button type="button" class="btn btn-del" onclick="delCustom(${i})">✕</button></div>
       `;
       wrap.appendChild(div);
     });
   }
 
-  function computeTotals() {
-    const W = getNum("widthIn");
-    const H = getNum("heightIn");
-    const qty = Math.max(1, getNum("qty"));
-    const sqftPerUnit = (W * H) / 144;
-    const totalSqft = sqftPerUnit * qty;
+  function calcAll() {
+    const w = num('wIn');
+    const h = num('hIn');
+    const qty = Math.max(1, num('qtyIn'));
+    const d52 = Math.max(0, num('d52Qty'));
+    const totalSqft = ((w * h) / 144) * qty;
 
-    let tickedTotal = 0;
-    const d52Count = Math.max(0, getNum("d52Count"));
-    selectedTicks.forEach(code => {
-      const info = calcSectionInches(code, W, H, d52Count);
-      const rft = (info.inches * qty) / 12;
-      tickedTotal += rft * (rates[code] || 0);
+    const tbody = document.getElementById('secTableBody');
+    tbody.innerHTML = '';
+    let secRs = 0;
+
+    document.querySelectorAll('#tickRow input[type="checkbox"]').forEach(cb => {
+      cb.parentElement.classList.toggle('checked', cb.checked);
+      if (!cb.checked) return;
+      const code = cb.value;
+      const info = secInches(code, w, h, d52);
+      const rft = (info.in * qty) / 12;
+      const rate = rateMap[code] || 0;
+      const amt = rft * rate;
+      secRs += amt;
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${code}</strong></td>
+        <td>${info.f} × ${qty}</td>
+        <td class="r">${rft.toFixed(2)} ft</td>
+        <td class="r" style="width:110px;"><input type="number" min="0" step="1" value="${rate}" oninput="rateMap['${code}']=parseFloat(this.value)||0;calcAll();" /></td>
+        <td class="r"><strong>Rs ${amt.toFixed(0)}</strong></td>
+      `;
+      tbody.appendChild(tr);
     });
 
-    let customTotal = 0;
-    customSelections.forEach(row => {
-      customTotal += (row.feet || 0) * (row.rate || 0);
-    });
+    let custRs = 0;
+    customRows.forEach(r => { custRs += (r.feet || 0) * (r.rate || 0); });
 
-    const georgianSqft = getNum("georgianSqft");
-    const georgianRate = getNum("georgianRate");
-    const georgianTotal = georgianSqft * georgianRate;
+    const gbRs = num('gbSqft') * num('gbRate');
+    const hwRs = num('hwUnit') * qty;
+    const glRs = totalSqft * num('glRate');
+    const lbRs = totalSqft * num('lbRate');
+    const subTotal = secRs + custRs + gbRs + hwRs + glRs + lbRs;
 
-    const hardwareTotal = getNum("hardwarePerUnit") * qty;
-    const glassTotal = totalSqft * getNum("glassRate");
-    const labourTotal = totalSqft * getNum("labourRate");
+    const pct = num('pctAdj');
+    const pctAmt = (subTotal * pct) / 100;
+    const grand = subTotal + pctAmt;
 
-    const grandTotal = tickedTotal + customTotal + georgianTotal + hardwareTotal + glassTotal + labourTotal;
+    const custName = document.getElementById('custName').value.trim() || "—";
+    const estDate = document.getElementById('estDate').value || "—";
 
-    document.getElementById("areaInfo").textContent =
-      `1 Unit Area: ${sqftPerUnit.toFixed(2)} Sq.Ft | Total Area (${qty} units): ${totalSqft.toFixed(2)} Sq.Ft`;
-
-    return { tickedTotal, customTotal, georgianTotal, hardwareTotal, glassTotal, labourTotal, grandTotal, totalSqft, qty };
+    document.getElementById('sqftText').textContent = `Total Area (${qty} units): ${totalSqft.toFixed(2)} Sq.Ft`;
+    return { custName, estDate, secRs, custRs, gbRs, hwRs, glRs, lbRs, subTotal, pct, pctAmt, grand, totalSqft, qty };
   }
 
-  function renderAll(rebuildTicks = true) {
-    if (rebuildTicks) renderTickBar();
-    renderActiveTable();
-    computeTotals();
-  }
+  function showGrand() {
+    const t = calcAll();
+    const box = document.getElementById('grandBox');
+    box.classList.remove('hidden');
 
-  function showGrandTotal() {
-    const t = computeTotals();
-    const box = document.getElementById("grandResult");
-    const summaryText = [
-      `Aluminium Estimate Summary (${t.qty} Units, ${t.totalSqft.toFixed(2)} Sq.Ft):`,
-      `- Ticked Sections: Rs ${t.tickedTotal.toFixed(0)}`,
-      `- Custom Sections: Rs ${t.customTotal.toFixed(0)}`,
-      `- Georgian Bar: Rs ${t.georgianTotal.toFixed(0)}`,
-      `- Hardware (${t.qty} units): Rs ${t.hardwareTotal.toFixed(0)}`,
-      `- Glass: Rs ${t.glassTotal.toFixed(0)}`,
-      `- Labour & Fitting: Rs ${t.labourTotal.toFixed(0)}`,
-      `GRAND TOTAL: Rs ${t.grandTotal.toFixed(0)}`
-    ].join("\n");
+    const pctLabel = t.pct === 0
+      ? "Adjustment (0%): Rs 0"
+      : `Adjustment (${t.pct > 0 ? "+" : ""}${t.pct}%): ${t.pctAmt >= 0 ? "+" : "-"}Rs ${Math.abs(t.pctAmt).toFixed(0)}`;
 
-    box.classList.remove("hidden");
+    const txt = [
+      `Customer: ${t.custName}`,
+      `Date: ${t.estDate}`,
+      `Estimate Summary (${t.qty} Units, ${t.totalSqft.toFixed(2)} Sq.Ft):`,
+      `Ticked Sections: Rs ${t.secRs.toFixed(0)}`,
+      `Custom Sections: Rs ${t.custRs.toFixed(0)}`,
+      `Georgian Bar: Rs ${t.gbRs.toFixed(0)}`,
+      `Hardware: Rs ${t.hwRs.toFixed(0)}`,
+      `Glass: Rs ${t.glRs.toFixed(0)}`,
+      `Labour: Rs ${t.lbRs.toFixed(0)}`,
+      `Subtotal: Rs ${t.subTotal.toFixed(0)}`,
+      pctLabel,
+      `GRAND TOTAL: Rs ${t.grand.toFixed(0)}`
+    ].join('\n');
+
     box.innerHTML = `
-      <div>Ticked Sections: <strong>Rs ${t.tickedTotal.toFixed(0)}</strong></div>
-      <div>Custom Sections: <strong>Rs ${t.customTotal.toFixed(0)}</strong></div>
-      <div>Georgian Bar: <strong>Rs ${t.georgianTotal.toFixed(0)}</strong></div>
-      <div>Hardware (${t.qty} units): <strong>Rs ${t.hardwareTotal.toFixed(0)}</strong></div>
-      <div>Glass (${t.totalSqft.toFixed(2)} Sq.Ft): <strong>Rs ${t.glassTotal.toFixed(0)}</strong></div>
-      <div>Labour & Fitting (${t.totalSqft.toFixed(2)} Sq.Ft): <strong>Rs ${t.labourTotal.toFixed(0)}</strong></div>
-      <div class="grand-total-line">Grand Total: Rs ${t.grandTotal.toFixed(0)}</div>
-      <textarea id="copyArea" readonly>${summaryText}</textarea>
-      <button type="button" class="btn btn-accent" style="margin-top:8px;" onclick="copySummary()">Copy Estimate Text</button>
+      <div>Customer: <strong>${t.custName}</strong> | Date: <strong>${t.estDate}</strong></div>
+      <div style="margin-top:6px;">Ticked Sections: <strong>Rs ${t.secRs.toFixed(0)}</strong></div>
+      <div>Custom Sections: <strong>Rs ${t.custRs.toFixed(0)}</strong></div>
+      <div>Georgian Bar: <strong>Rs ${t.gbRs.toFixed(0)}</strong></div>
+      <div>Hardware: <strong>Rs ${t.hwRs.toFixed(0)}</strong></div>
+      <div>Glass: <strong>Rs ${t.glRs.toFixed(0)}</strong></div>
+      <div>Labour: <strong>Rs ${t.lbRs.toFixed(0)}</strong></div>
+      <div>Subtotal: <strong>Rs ${t.subTotal.toFixed(0)}</strong></div>
+      <div>${pctLabel.replace(/Rs ([\d.]+)/, '<strong>Rs $1</strong>')}</div>
+      <div class="grand-num">Grand Total: Rs ${t.grand.toFixed(0)}</div>
+      <textarea readonly>${txt}</textarea>
     `;
   }
 
-  function copySummary() {
-    const ta = document.getElementById("copyArea");
-    ta.select();
-    document.execCommand("copy");
-  }
-
-  renderAll();
+  loadSavedRates();
+  calcAll();
 </script>
 </body>
   </html>
